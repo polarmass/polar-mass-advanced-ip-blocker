@@ -4,10 +4,10 @@
  *
  * @author Polar Mass
  * @since 1.0.0
- * @package cloudflare-ip-blocker
+ * @package polar-mass-advanced-ip-blocker
  */
 
-namespace Cloudflare_Ip_Blocker;
+namespace Pm_Ip_Blocker;
 
 /**
  * Class Cloudflare_Api
@@ -50,7 +50,7 @@ class Cloudflare_Api {
 	 */
 	public function __construct( Logger $logger ) {
 		$this->logger    = $logger;
-		$this->api_token = get_option( 'cfip_api_token' );
+		$this->api_token = get_option( 'pmip_api_token' );
 	}
 
 	/**
@@ -60,9 +60,9 @@ class Cloudflare_Api {
 	 * @return bool Success status.
 	 */
 	public function block_ips( $ips ) {
-		$zone_id    = get_option( 'cfip_zone_id' );
-		$ruleset_id = get_option( 'cfip_ruleset_id' );
-		$rule_id    = get_option( 'cfip_rule_id' );
+		$zone_id    = get_option( 'pmip_zone_id' );
+		$ruleset_id = get_option( 'pmip_ruleset_id' );
+		$rule_id    = get_option( 'pmip_rule_id' );
 
 		if ( ! $zone_id || ! $ruleset_id || ! $rule_id ) {
 			$this->logger->log( 'Missing required Cloudflare configuration', 'error' );
@@ -72,14 +72,14 @@ class Cloudflare_Api {
 		$endpoint = "https://api.cloudflare.com/client/v4/zones/{$zone_id}/rulesets/{$ruleset_id}/rules/{$rule_id}";
 
 		// Get blocked IPs from database.
-		$blocked_ips = get_option( 'cfip_blocked_ips', array() );
+		$blocked_ips = get_option( 'pmip_blocked_ips', array() );
 
 		// Add new IPs if not already blocked.
 		foreach ( $ips as $ip ) {
 			if ( ! isset( $blocked_ips[ $ip ] ) ) {
 				$blocked_ips[ $ip ] = array(
 					'timestamp' => time(),
-					'duration'  => get_option( 'cfip_block_duration', '24h' ),
+					'duration'  => get_option( 'pmip_block_duration', '24h' ),
 				);
 			}
 		}
@@ -100,7 +100,7 @@ class Cloudflare_Api {
 		$response = $this->make_request( 'PATCH', $endpoint, $data );
 
 		if ( isset( $response['success'] ) && true === $response['success'] ) {
-			update_option( 'cfip_blocked_ips', $blocked_ips );
+			update_option( 'pmip_blocked_ips', $blocked_ips );
 			return true;
 		}
 
@@ -124,9 +124,9 @@ class Cloudflare_Api {
 	 * @return bool Success status.
 	 */
 	public function unblock_ip( $ip ) {
-		$zone_id    = get_option( 'cfip_zone_id' );
-		$ruleset_id = get_option( 'cfip_ruleset_id' );
-		$rule_id    = get_option( 'cfip_rule_id' );
+		$zone_id    = get_option( 'pmip_zone_id' );
+		$ruleset_id = get_option( 'pmip_ruleset_id' );
+		$rule_id    = get_option( 'pmip_rule_id' );
 
 		if ( ! $zone_id || ! $ruleset_id || ! $rule_id ) {
 			$this->logger->log( 'Missing required Cloudflare configuration', 'error' );
@@ -136,7 +136,7 @@ class Cloudflare_Api {
 		$endpoint = "https://api.cloudflare.com/client/v4/zones/{$zone_id}/rulesets/{$ruleset_id}/rules/{$rule_id}";
 
 		// Get blocked IPs from database.
-		$blocked_ips = get_option( 'cfip_blocked_ips', array() );
+		$blocked_ips = get_option( 'pmip_blocked_ips', array() );
 
 		// Remove IP from list.
 		if ( isset( $blocked_ips[ $ip ] ) ) {
@@ -160,7 +160,7 @@ class Cloudflare_Api {
 		$response = $this->make_request( 'PATCH', $endpoint, $data );
 
 		if ( isset( $response['success'] ) && true === $response['success'] ) {
-			update_option( 'cfip_blocked_ips', $blocked_ips );
+			update_option( 'pmip_blocked_ips', $blocked_ips );
 			return true;
 		}
 

@@ -6,10 +6,10 @@
  *
  * @author Polar Mass
  * @since 1.0.0
- * @package cloudflare-ip-blocker
+ * @package polar-mass-advanced-ip-blocker
  */
 
-namespace Cloudflare_Ip_Blocker;
+namespace Pm_Ip_Blocker;
 
 /**
  * Class Ip_Blocker
@@ -46,7 +46,7 @@ class Ip_Blocker {
 	public function __construct( Logger $logger ) {
 		$this->logger      = $logger;
 		$this->cloudflare  = new Cloudflare_Api( $logger );
-		$this->blocked_ips = get_option( 'cfip_blocked_ips', array() );
+		$this->blocked_ips = get_option( 'pmip_blocked_ips', array() );
 	}
 
 	/**
@@ -67,7 +67,7 @@ class Ip_Blocker {
 			$ips30d = (array) $activity_report->getTopIPsBlocked( 100, 30 );
 
 			// Process and normalize the data.
-			$threshold    = get_option( 'cfip_failed_attempts', 5 );
+			$threshold    = get_option( 'pmip_failed_attempts', 5 );
 			$ips_to_block = array();
 
 			foreach ( array( $ips24h, $ips7d, $ips30d ) as $ip_list ) {
@@ -123,7 +123,7 @@ class Ip_Blocker {
 			$event_text = 'login lockout';
 		}
 		$this->logger->log( "Received Wordfence event: {$event_text} for IP {$ip}" );
-		$threshold = (int) get_option( 'cfip_failed_attempts', 5 ); // Ensure threshold is an integer.
+		$threshold = (int) get_option( 'pmip_failed_attempts', 5 ); // Ensure threshold is an integer.
 
 		// If attackCount is set and exceeds the threshold, block immediately.
 		if ( ! empty( $data['attackCount'] ) ) {
@@ -170,7 +170,7 @@ class Ip_Blocker {
 	 * @return array An array containing 'count' (int), 'timestamp' (int|null), and 'duration' (string|null).
 	 */
 	private function get_failed_attempts( $ip ) {
-		$attempts = get_option( 'cfip_failed_attempts_log', array() );
+		$attempts = get_option( 'pmip_failed_attempts_log', array() );
 		return isset( $attempts[ $ip ] ) ? $attempts[ $ip ] : array(
 			'count'     => 0,
 			'timestamp' => null,
@@ -186,14 +186,14 @@ class Ip_Blocker {
 	 * @param int    $count The number of failed attempts.
 	 */
 	private function update_failed_attempts( $ip, $count ) {
-		$attempts = get_option( 'cfip_failed_attempts_log', array() );
+		$attempts = get_option( 'pmip_failed_attempts_log', array() );
 
 		if ( 1 === $count ) {
 			// If this is the first failure, store the timestamp.
 			$attempts[ $ip ] = array(
 				'count'     => $count,
 				'timestamp' => time(),
-				'duration'  => get_option( 'cfip_block_duration', '24h' ),
+				'duration'  => get_option( 'pmip_block_duration', '24h' ),
 			);
 		} elseif ( isset( $attempts[ $ip ] ) ) {
 			// Otherwise, just update the count.
@@ -202,11 +202,11 @@ class Ip_Blocker {
 			$attempts[ $ip ] = array(
 				'count'     => $count,
 				'timestamp' => time(),
-				'duration'  => get_option( 'cfip_block_duration', '24h' ),
+				'duration'  => get_option( 'pmip_block_duration', '24h' ),
 			);
 		}
 
-		update_option( 'cfip_failed_attempts_log', $attempts );
+		update_option( 'pmip_failed_attempts_log', $attempts );
 	}
 
 	/**
@@ -231,9 +231,9 @@ class Ip_Blocker {
 			if ( $result ) {
 				$this->blocked_ips[ $ip ] = array(
 					'timestamp' => time(),
-					'duration'  => get_option( 'cfip_block_duration', '24h' ),
+					'duration'  => get_option( 'pmip_block_duration', '24h' ),
 				);
-				update_option( 'cfip_blocked_ips', $this->blocked_ips );
+				update_option( 'pmip_blocked_ips', $this->blocked_ips );
 				$this->logger->log( "Successfully blocked IP: {$ip}" );
 				return true;
 			}
@@ -262,7 +262,7 @@ class Ip_Blocker {
 			$result = $this->cloudflare->unblock_ip( $ip );
 			if ( $result ) {
 				unset( $this->blocked_ips[ $ip ] );
-				update_option( 'cfip_blocked_ips', $this->blocked_ips );
+				update_option( 'pmip_blocked_ips', $this->blocked_ips );
 				$this->logger->log( "Successfully unblocked IP: {$ip}" );
 				return true;
 			}
@@ -292,7 +292,7 @@ class Ip_Blocker {
 	 * @return bool Whether IP is whitelisted.
 	 */
 	public function is_whitelisted( $ip ) {
-		$whitelist = get_option( 'cfip_ip_whitelist', array() );
+		$whitelist = get_option( 'pmip_ip_whitelist', array() );
 		return in_array( $ip, $whitelist, true );
 	}
 
@@ -300,7 +300,7 @@ class Ip_Blocker {
 	 * Check and block IPs based on failed login attempts
 	 */
 	public function check_and_block_ips() {
-		if ( get_option( 'cfip_plugin_status', 'inactive' ) !== 'active' ) {
+		if ( get_option( 'pmip_plugin_status', 'inactive' ) !== 'active' ) {
 			return;
 		}
 
@@ -320,7 +320,7 @@ class Ip_Blocker {
 		}
 
 		if ( $modified ) {
-			update_option( 'cfip_blocked_ips', $this->blocked_ips );
+			update_option( 'pmip_blocked_ips', $this->blocked_ips );
 		}
 	}
 

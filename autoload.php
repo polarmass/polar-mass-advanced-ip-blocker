@@ -4,13 +4,13 @@
  *
  * @author Polar Mass
  * @since 1.0.0
- * @package cloudflare-ip-blocker
+ * @package polar-mass-advanced-ip-blocker
  */
 
 spl_autoload_register(
 	function ( $class ) {
-		$prefix   = 'Cloudflare_Ip_Blocker\\';
-		$base_dir = CFIP_BLOCKER_PLUGIN_DIR . 'includes/';
+		$prefix   = 'Pm_Ip_Blocker\\';
+		$base_dir = PMIP_BLOCKER_PLUGIN_DIR . 'includes/';
 
 		// Check if the class belongs to our namespace.
 		$len = strlen( $prefix );

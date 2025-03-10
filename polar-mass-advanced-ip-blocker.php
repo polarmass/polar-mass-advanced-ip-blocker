@@ -8,14 +8,14 @@
  * Author URI: https://polarmass.com
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: cloudflare-ip-blocker
+ * Text Domain: polar-mass-advanced-ip-blocker
  * Domain Path: /languages
  * Requires at least: 5.8
  * Requires PHP: 7.4
  *
  * @author Polar Mass
  * @since 1.0.0
- * @package cloudflare-ip-blocker
+ * @package polar-mass-advanced-ip-blocker
  */
 
 // Prevent direct access.
@@ -24,30 +24,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin constants.
-define( 'CFIP_BLOCKER_VERSION', '1.0.0' );
-define( 'CFIP_BLOCKER_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'CFIP_BLOCKER_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'PMIP_BLOCKER_VERSION', '1.0.0' );
+define( 'PMIP_BLOCKER_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'PMIP_BLOCKER_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-require_once CFIP_BLOCKER_PLUGIN_DIR . 'autoload.php';
+require_once PMIP_BLOCKER_PLUGIN_DIR . 'autoload.php';
 
 /**
  * Initialize the plugin.
  */
-function cfip_blocker_init() {
+function pmip_blocker_init() {
 	// Load text domain for translations.
-	load_plugin_textdomain( 'cloudflare-ip-blocker', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+	load_plugin_textdomain( 'polar-mass-advanced-ip-blocker', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
 	// Initialize main plugin class.
-	$plugin = new Cloudflare_Ip_Blocker\Plugin();
+	$plugin = new Pm_Ip_Blocker\Plugin();
 	$plugin->init();
 }
-add_action( 'plugins_loaded', 'cfip_blocker_init' );
+add_action( 'plugins_loaded', 'pmip_blocker_init' );
 
 // Activation hook.
 register_activation_hook(
 	__FILE__,
 	function() {
-		$installer = new Cloudflare_Ip_Blocker\Installer();
+		$installer = new Pm_Ip_Blocker\Installer();
 		$installer->activate();
 	}
 );
@@ -56,10 +56,10 @@ register_activation_hook(
 register_deactivation_hook(
 	__FILE__,
 	function() {
-		$installer = new Cloudflare_Ip_Blocker\Installer();
+		$installer = new Pm_Ip_Blocker\Installer();
 		$installer->deactivate();
 	}
 );
 
 // Uninstall hook.
-register_uninstall_hook( __FILE__, array( 'Cloudflare_Ip_Blocker\Installer', 'uninstall' ) );
+register_uninstall_hook( __FILE__, array( 'Pm_Ip_Blocker\Installer', 'uninstall' ) );

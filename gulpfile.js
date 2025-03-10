@@ -44,52 +44,46 @@ gulp.task('generate-pot', (done) => {
         .src(paths.pot)
         .pipe(
             wpPot({
-                domain: 'cloudflare-ip-blocker',
+                domain: 'polar-mass-advanced-ip-blocker',
                 package: 'Polar Mass Advanced IP Blocker',
                 team: 'Polar Mass',
             })
         )
-        .pipe(gulp.dest(path.join(paths.languages, 'cloudflare-ip-blocker.pot')))
+        .pipe(gulp.dest(path.join(paths.languages, 'polar-mass-advanced-ip-blocker.pot')))
 })
 
 // Rename files before zipping
 gulp.task('rename-files', (done) => {
-    if (fs.existsSync('README.md')) {
-        fs.renameSync('README.md', 'readme.txt')
-    }
     if (fs.existsSync('LICENSE')) {
         fs.renameSync('LICENSE', 'license.txt')
     }
     done()
 })
 
-// Copy plugin files to release/cloudflare-ip-blocker before zipping
+// Copy plugin files to release/polar-mass-advanced-ip-blocker before zipping
 gulp.task('copy', () => {
     return gulp
         .src(['**/*', '!node_modules/**', '!gulpfile.js', '!package.json', '!package-lock.json', '!release/**', '!README.md', '!LICENSE'], {
             encoding: false,
         })
-        .pipe(gulp.dest('release/cloudflare-ip-blocker'))
+        .pipe(gulp.dest('release/polar-mass-advanced-ip-blocker'))
 })
 
-// Zip the cloudflare-ip-blocker folder inside release/
+// Zip the polar-mass-advanced-ip-blocker folder inside release/
 gulp.task(
     'zip',
     gulp.series('copy', () => {
-        return gulp.src('release/cloudflare-ip-blocker/**/*', { base: 'release', encoding: false }).pipe(zip('cloudflare-ip-blocker.zip')).pipe(gulp.dest('release'))
+        return gulp.src('release/polar-mass-advanced-ip-blocker/**/*', { base: 'release', encoding: false }).pipe(zip('polar-mass-advanced-ip-blocker.zip')).pipe(gulp.dest('release'))
     })
 )
 
-// Clean up the release/cloudflare-ip-blocker folder after zipping
+// Clean up the release/polar-mass-advanced-ip-blocker folder after zipping
 gulp.task('clean', () => {
-    return deleteAsync('release/cloudflare-ip-blocker')
+    return deleteAsync('release/polar-mass-advanced-ip-blocker')
 })
 
 // Restore original filenames after zipping
 gulp.task('restore-files', (done) => {
-    if (fs.existsSync('readme.txt')) {
-        fs.renameSync('readme.txt', 'README.md')
-    }
     if (fs.existsSync('license.txt')) {
         fs.renameSync('license.txt', 'LICENSE')
     }

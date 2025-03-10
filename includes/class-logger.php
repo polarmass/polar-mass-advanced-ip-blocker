@@ -6,10 +6,10 @@
  *
  * @author Polar Mass
  * @since 1.0.0
- * @package cloudflare-ip-blocker
+ * @package polar-mass-advanced-ip-blocker
  */
 
-namespace Cloudflare_Ip_Blocker;
+namespace Pm_Ip_Blocker;
 
 /**
  * Class Logger
@@ -36,8 +36,8 @@ class Logger {
 	 */
 	public function __construct() {
 		$upload_dir     = wp_upload_dir();
-		$this->log_file = $upload_dir['basedir'] . '/cloudflare-ip-blocker/cloudflare-ip-blocker.log';
-		$this->max_logs = get_option( 'cfip_max_logs', 1000 );
+		$this->log_file = $upload_dir['basedir'] . '/polar-mass-advanced-ip-blocker/polar-mass-advanced-ip-blocker.log';
+		$this->max_logs = get_option( 'pmip_max_logs', 1000 );
 	}
 
 	/**

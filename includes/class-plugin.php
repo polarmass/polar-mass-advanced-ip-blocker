@@ -4,10 +4,10 @@
  *
  * @author Polar Mass
  * @since 1.0.0
- * @package cloudflare-ip-blocker
+ * @package polar-mass-advanced-ip-blocker
  */
 
-namespace Cloudflare_Ip_Blocker;
+namespace Pm_Ip_Blocker;
 
 /**
  * Handles the core functionality of the Cloudflare IP Blocker plugin.
@@ -57,15 +57,15 @@ class Plugin {
 	 */
 	private function setup_hooks() {
 		// Schedule IP check cron job.
-		if ( ! wp_next_scheduled( 'cfip_check_ips' ) ) {
-			wp_schedule_event( time(), 'cfip_custom_interval', 'cfip_check_ips' );
+		if ( ! wp_next_scheduled( 'pmip_check_ips' ) ) {
+			wp_schedule_event( time(), 'pmip_custom_interval', 'pmip_check_ips' );
 		}
 
 		// Add custom cron intervals.
 		add_filter( 'cron_schedules', array( $this, 'add_cron_intervals' ) );
 
 		// Hook into IP check cron job.
-		add_action( 'cfip_check_ips', array( $this->ip_blocker, 'check_and_block_ips' ) );
+		add_action( 'pmip_check_ips', array( $this->ip_blocker, 'check_and_block_ips' ) );
 
 		// Hook into Wordfence failed login attempts.
 		add_action( 'wordfence_security_event', array( $this->ip_blocker, 'handle_wordfence_event' ), 10, 2 );
@@ -90,7 +90,7 @@ class Plugin {
 					echo '<div class="notice notice-error"><p>' .
 					sprintf(
 						/* translators: 1: Required PHP version, 2: Current PHP version */
-						esc_html__( 'Polar Mass Advanced IP Blocker requires PHP %1$s or higher. Your current PHP version is %2$s.', 'cloudflare-ip-blocker' ),
+						esc_html__( 'Polar Mass Advanced IP Blocker requires PHP %1$s or higher. Your current PHP version is %2$s.', 'polar-mass-advanced-ip-blocker' ),
 						'7.4',
 						esc_html( PHP_VERSION )
 					) .
@@ -109,7 +109,7 @@ class Plugin {
 					echo '<div class="notice notice-error"><p>' .
 					sprintf(
 						/* translators: 1: Required WordPress version, 2: Current WordPress version */
-						esc_html__( 'Polar Mass Advanced IP Blocker requires WordPress %1$s or higher. Your current WordPress version is %2$s.', 'cloudflare-ip-blocker' ),
+						esc_html__( 'Polar Mass Advanced IP Blocker requires WordPress %1$s or higher. Your current WordPress version is %2$s.', 'polar-mass-advanced-ip-blocker' ),
 						'5.8',
 						esc_html( $wp_version )
 					) .
@@ -125,7 +125,7 @@ class Plugin {
 				'admin_notices',
 				function() {
 					echo '<div class="notice notice-error"><p>' .
-					esc_html__( 'Polar Mass Advanced IP Blocker requires Wordfence to be installed and activated.', 'cloudflare-ip-blocker' ) .
+					esc_html__( 'Polar Mass Advanced IP Blocker requires Wordfence to be installed and activated.', 'polar-mass-advanced-ip-blocker' ) .
 					'</p></div>';
 				}
 			);
@@ -141,7 +141,7 @@ class Plugin {
 					echo '<div class="notice notice-error"><p>' .
 					sprintf(
 						/* translators: %s: Uploads directory path */
-						esc_html__( 'Polar Mass Advanced IP Blocker requires write access to the uploads directory: %s', 'cloudflare-ip-blocker' ),
+						esc_html__( 'Polar Mass Advanced IP Blocker requires write access to the uploads directory: %s', 'polar-mass-advanced-ip-blocker' ),
 						esc_html( $upload_dir['basedir'] )
 					) .
 					'</p></div>';
@@ -156,7 +156,7 @@ class Plugin {
 				'admin_notices',
 				function() {
 					echo '<div class="notice notice-error"><p>' .
-					esc_html__( 'Polar Mass Advanced IP Blocker requires cURL PHP extension to be installed and enabled.', 'cloudflare-ip-blocker' ) .
+					esc_html__( 'Polar Mass Advanced IP Blocker requires cURL PHP extension to be installed and enabled.', 'polar-mass-advanced-ip-blocker' ) .
 					'</p></div>';
 				}
 			);
@@ -169,7 +169,7 @@ class Plugin {
 				'admin_notices',
 				function() {
 					echo '<div class="notice notice-error"><p>' .
-					esc_html__( 'Polar Mass Advanced IP Blocker requires JSON PHP extension to be installed.', 'cloudflare-ip-blocker' ) .
+					esc_html__( 'Polar Mass Advanced IP Blocker requires JSON PHP extension to be installed.', 'polar-mass-advanced-ip-blocker' ) .
 					'</p></div>';
 				}
 			);
@@ -186,12 +186,12 @@ class Plugin {
 	 * @return array Modified cron schedules.
 	 */
 	public function add_cron_intervals( $schedules ) {
-		$interval = get_option( 'cfip_scan_interval', 15 ) * 60; // Convert minutes to seconds.
+		$interval = get_option( 'pmip_scan_interval', 15 ) * 60; // Convert minutes to seconds.
 
-		$schedules['cfip_custom_interval'] = array(
+		$schedules['pmip_custom_interval'] = array(
 			'interval' => $interval,
 			/* translators: %d: Interval in minutes. */
-			'display'  => sprintf( esc_html__( 'Every %d minutes', 'cloudflare-ip-blocker' ), $interval / 60 ),
+			'display'  => sprintf( esc_html__( 'Every %d minutes', 'polar-mass-advanced-ip-blocker' ), $interval / 60 ),
 		);
 
 		return $schedules;
