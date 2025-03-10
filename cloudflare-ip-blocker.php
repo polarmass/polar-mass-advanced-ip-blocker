@@ -12,58 +12,54 @@
  * Domain Path: /languages
  * Requires at least: 5.8
  * Requires PHP: 7.4
+ *
+ * @author Polar Mass
+ * @since 1.0.0
+ * @package cloudflare-ip-blocker
  */
 
-// Prevent direct access
-if (!defined('ABSPATH')) {
-    exit;
+// Prevent direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
-// Plugin constants
-define('CFIP_BLOCKER_VERSION', '1.0.1');
-define('CFIP_BLOCKER_PLUGIN_DIR', plugin_dir_path(__FILE__));
-define('CFIP_BLOCKER_PLUGIN_URL', plugin_dir_url(__FILE__));
+// Plugin constants.
+define( 'CFIP_BLOCKER_VERSION', '1.0.1' );
+define( 'CFIP_BLOCKER_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'CFIP_BLOCKER_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-// Autoloader
-spl_autoload_register(function ($class) {
-    $prefix = 'CloudflareIpBlocker\\';
-    $base_dir = CFIP_BLOCKER_PLUGIN_DIR . 'includes/';
+require_once CFIP_BLOCKER_PLUGIN_DIR . 'autoload.php';
 
-    $len = strlen($prefix);
-    if (strncmp($prefix, $class, $len) !== 0) {
-        return;
-    }
-
-    $relative_class = substr($class, $len);
-    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
-
-    if (file_exists($file)) {
-        require $file;
-    }
-});
-
-// Initialize plugin
+/**
+ * Initialize the plugin.
+ */
 function cfip_blocker_init() {
-    // Load text domain for translations
-    load_plugin_textdomain('cloudflare-ip-blocker', false, dirname(plugin_basename(__FILE__)) . '/languages');
+	// Load text domain for translations.
+	load_plugin_textdomain( 'cloudflare-ip-blocker', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
-    // Initialize main plugin class
-    $plugin = new CloudflareIpBlocker\Plugin();
-    $plugin->init();
+	// Initialize main plugin class.
+	$plugin = new Cloudflare_Ip_Blocker\Plugin();
+	$plugin->init();
 }
-add_action('plugins_loaded', 'cfip_blocker_init');
+add_action( 'plugins_loaded', 'cfip_blocker_init' );
 
-// Activation hook
-register_activation_hook(__FILE__, function() {
-    $installer = new CloudflareIpBlocker\Installer();
-    $installer->activate();
-});
+// Activation hook.
+register_activation_hook(
+	__FILE__,
+	function() {
+		$installer = new Cloudflare_Ip_Blocker\Installer();
+		$installer->activate();
+	}
+);
 
-// Deactivation hook
-register_deactivation_hook(__FILE__, function() {
-    $installer = new CloudflareIpBlocker\Installer();
-    $installer->deactivate();
-});
+// Deactivation hook.
+register_deactivation_hook(
+	__FILE__,
+	function() {
+		$installer = new Cloudflare_Ip_Blocker\Installer();
+		$installer->deactivate();
+	}
+);
 
-// Uninstall hook
-register_uninstall_hook(__FILE__, ['CloudflareIpBlocker\Installer', 'uninstall']);
+// Uninstall hook.
+register_uninstall_hook( __FILE__, array( 'Cloudflare_Ip_Blocker\Installer', 'uninstall' ) );

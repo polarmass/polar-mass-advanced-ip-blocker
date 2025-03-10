@@ -40,7 +40,6 @@ gulp.task('generate-pot', (done) => {
     if (!fs.existsSync(paths.languages)) {
         fs.mkdirSync(paths.languages, { recursive: true }) // Ensure directory exists
     }
-
     return gulp
         .src(paths.pot)
         .pipe(
@@ -75,7 +74,7 @@ gulp.task('copy', () => {
 gulp.task(
     'zip',
     gulp.series('copy', () => {
-        return gulp.src('release/cloudflare-ip-blocker/**/*', { base:'release' }).pipe(zip('cloudflare-ip-blocker.zip')).pipe(gulp.dest('release'))
+        return gulp.src('release/cloudflare-ip-blocker/**/*', { base: 'release' }).pipe(zip('cloudflare-ip-blocker.zip')).pipe(gulp.dest('release'))
     })
 )
 
