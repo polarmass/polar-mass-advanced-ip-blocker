@@ -40,8 +40,6 @@ We welcome contributions! If you'd like to help improve this plugin, please foll
 4. Push to the branch (`git push origin feature-name`).
 5. Open a Pull Request.
 
-🔗 **GitHub Repository:** [Polar Mass Advanced IP Blocker](https://github.com/polarmass/cloudflare-ip-blocker)  
-
 ## 📜 License
 
 This project is licensed under the [GPL License](LICENSE).

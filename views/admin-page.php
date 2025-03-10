@@ -46,7 +46,12 @@ $is_subscribed = get_option( 'cfip_newsletter_subscribed' ) === '1';
 									value="<?php echo esc_attr( get_option( 'cfip_api_token' ) ); ?>" 
 									class="regular-text">
 							<p class="description">
-								<?php esc_attr_e( 'Enter your Cloudflare API token. <a href="#" class="cfip-show-token-instructions">How to get your API token?</a>', 'cloudflare-ip-blocker' ); ?>
+							<?php
+							printf(
+								esc_html__( 'Enter your Cloudflare API token. %s', 'cloudflare-ip-blocker' ),
+								'<a href="#" class="cfip-show-token-instructions">' . esc_html__( 'How to get your API token?', 'cloudflare-ip-blocker' ) . '</a>'
+							);
+							?>
 							</p>
 						</td>
 					</tr>
@@ -178,7 +183,7 @@ $is_subscribed = get_option( 'cfip_newsletter_subscribed' ) === '1';
 				
 				<div class="cfip-buymeacoffee">
 					<a href="https://www.buymeacoffee.com/polarmass" target="_blank">
-						<img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;">
+						<img src="<?php echo esc_url( CFIP_BLOCKER_PLUGIN_URL . 'assets/images/buymeacoffee-blue.png' ); ?>" alt="Buy Me A Coffee" style="height: 60px !important; width: 217px !important;">
 					</a>
 				</div>
 

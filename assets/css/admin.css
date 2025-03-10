@@ -333,3 +333,79 @@ body.cfip-modal-open {
         grid-template-columns: 1fr;
     }
 }
+/* Adjust grid layout for small screens */
+@media (max-width: 768px) {
+    .cfip-admin-grid {
+        display: block; /* Stack instead of side-by-side */
+    }
+
+    .cfip-main-settings, 
+    .cfip-side-panel > div {
+        margin-bottom: 15px;
+    }
+
+    .cfip-log-filters,
+    .cfip-manual-block-form {
+        flex-direction: column;
+    }
+
+    .cfip-manual-block-form input {
+        width: 100%;
+    }
+}
+
+/* Improve modal on small screens */
+@media (max-width: 600px) {
+    #cfip-token-instructions--content {
+        width: 95%;
+        max-height: 90vh;
+        padding: 15px;
+    }
+
+    #cfip-close {
+        top: 8px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+    }
+}
+
+/* Fix button and form responsiveness */
+@media (max-width: 480px) {
+    .cfip-newsletter-form {
+        flex-direction: column;
+    }
+
+    .cfip-newsletter-form input,
+    .cfip-newsletter-form button {
+        width: 100%;
+    }
+
+    .cfip-contact-methods {
+        grid-template-columns: 1fr;
+    }
+
+    .cfip-contact-method {
+        padding: 15px;
+    }
+
+    .cfip-buymeacoffee img {
+        width: 100%;
+        height: auto;
+    }
+}
+
+/* Improve log entries display on mobile */
+@media (max-width: 768px) {
+    .cfip-log-entries table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .cfip-log-entries th,
+    .cfip-log-entries td {
+        white-space: nowrap;
+    }
+}

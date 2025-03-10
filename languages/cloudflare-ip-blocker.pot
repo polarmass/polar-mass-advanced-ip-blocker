@@ -7,7 +7,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language-Team: Polar Mass\n"
-"POT-Creation-Date: 2025-03-10 09:46+0000\n"
+"POT-Creation-Date: 2025-03-10 10:39+0000\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -158,314 +158,318 @@ msgstr ""
 msgid "Cloudflare API Token"
 msgstr ""
 
-#: views/admin-page.php:49
-msgid "Enter your Cloudflare API token. <a href=\"#\" class=\"cfip-show-token-instructions\">How to get your API token?</a>"
+#: views/admin-page.php:51
+msgid "Enter your Cloudflare API token. %s"
 msgstr ""
 
-#: views/admin-page.php:55
+#: views/admin-page.php:52
+msgid "How to get your API token?"
+msgstr ""
+
+#: views/admin-page.php:60
 msgid "Zone ID"
 msgstr ""
 
-#: views/admin-page.php:64
+#: views/admin-page.php:69
 msgid "Enter your Cloudflare Zone ID. Found in the Overview tab of your domain."
 msgstr ""
 
-#: views/admin-page.php:70
+#: views/admin-page.php:75
 msgid "Ruleset ID"
 msgstr ""
 
-#: views/admin-page.php:79
+#: views/admin-page.php:84
 msgid "Enter your Cloudflare Ruleset ID. Found in the WAF > Custom Rules section."
 msgstr ""
 
-#: views/admin-page.php:85
+#: views/admin-page.php:90
 msgid "Rule ID"
 msgstr ""
 
-#: views/admin-page.php:94
+#: views/admin-page.php:99
 msgid "Enter your Cloudflare Rule ID. Found in the specific rule settings under WAF > Custom Rules."
 msgstr ""
 
-#: views/admin-page.php:100
+#: views/admin-page.php:105
 msgid "Scan Interval"
 msgstr ""
 
-#: views/admin-page.php:105
+#: views/admin-page.php:110
 msgid "5 minutes"
 msgstr ""
 
-#: views/admin-page.php:108
+#: views/admin-page.php:113
 msgid "15 minutes"
 msgstr ""
 
-#: views/admin-page.php:111
+#: views/admin-page.php:116
 msgid "30 minutes"
 msgstr ""
 
-#: views/admin-page.php:114
+#: views/admin-page.php:119
 msgid "60 minutes"
 msgstr ""
 
-#: views/admin-page.php:121
+#: views/admin-page.php:126
 msgid "Failed Attempts Threshold"
 msgstr ""
 
-#: views/admin-page.php:132
+#: views/admin-page.php:137
 msgid "Number of failed login attempts before blocking (3-10)"
 msgstr ""
 
-#: views/admin-page.php:138
+#: views/admin-page.php:143
 msgid "Block Duration"
 msgstr ""
 
-#: views/admin-page.php:143
+#: views/admin-page.php:148
 msgid "24 Hours"
 msgstr ""
 
-#: views/admin-page.php:146
+#: views/admin-page.php:151
 msgid "7 Days"
 msgstr ""
 
-#: views/admin-page.php:149
+#: views/admin-page.php:154
 msgid "Permanent"
 msgstr ""
 
-#: views/admin-page.php:156
+#: views/admin-page.php:161
 msgid "Maximum Log Entries"
 msgstr ""
 
-#: views/admin-page.php:166
+#: views/admin-page.php:171
 msgid "Maximum number of log entries to keep"
 msgstr ""
 
-#: views/admin-page.php:176
+#: views/admin-page.php:181
 msgid "Support Our Development"
 msgstr ""
 
-#: views/admin-page.php:177
+#: views/admin-page.php:182
 msgid "Help us continue improving and maintaining this plugin for the WordPress community."
 msgstr ""
 
-#: views/admin-page.php:186
+#: views/admin-page.php:191
 msgid "Get in Touch"
 msgstr ""
 
-#: views/admin-page.php:187
+#: views/admin-page.php:192
 msgid "Have questions or need assistance? We're here to help!"
 msgstr ""
 
-#: views/admin-page.php:192
+#: views/admin-page.php:197
 msgid "Email Support"
 msgstr ""
 
-#: views/admin-page.php:193
+#: views/admin-page.php:198
 msgid "For technical issues and general inquiries"
 msgstr ""
 
-#: views/admin-page.php:199
+#: views/admin-page.php:204
 msgid "Visit Website"
 msgstr ""
 
-#: views/admin-page.php:200
+#: views/admin-page.php:205
 msgid "Documentation and resources"
 msgstr ""
 
-#: views/admin-page.php:218
+#: views/admin-page.php:223
 msgid "Thank you for subscribing to our newsletter!"
 msgstr ""
 
-#: views/admin-page.php:219
+#: views/admin-page.php:224
 msgid "You'll receive updates and security tips directly in your inbox."
 msgstr ""
 
-#: views/admin-page.php:209
+#: views/admin-page.php:214
 msgid "Stay Updated"
 msgstr ""
 
-#: views/admin-page.php:210
+#: views/admin-page.php:215
 msgid "Subscribe to our newsletter for security tips, updates, and special offers."
 msgstr ""
 
-#: views/admin-page.php:212
+#: views/admin-page.php:217
 msgid "Enter your email address"
 msgstr ""
 
-#: views/admin-page.php:213
+#: views/admin-page.php:218
 msgid "Subscribe"
 msgstr ""
 
-#: views/admin-page.php:227
+#: views/admin-page.php:232
 msgid "Manual IP Management"
 msgstr ""
 
-#: views/admin-page.php:229
+#: views/admin-page.php:234
 msgid "Enter IP address"
 msgstr ""
 
-#: views/admin-page.php:231
+#: views/admin-page.php:236
 msgid "Block IP"
 msgstr ""
 
-#: views/admin-page.php:234
+#: views/admin-page.php:239
 msgid "Unblock IP"
 msgstr ""
 
-#: views/admin-page.php:239
+#: views/admin-page.php:244
 msgid "Sync from Wordfence"
 msgstr ""
 
-#: views/admin-page.php:242
+#: views/admin-page.php:247
 msgid "Manually sync blocked IPs from Wordfence"
 msgstr ""
 
-#: views/admin-page.php:248
+#: views/admin-page.php:253
 msgid "Recent Activity Logs"
 msgstr ""
 
-#: views/admin-page.php:251
+#: views/admin-page.php:256
 msgid "All Levels"
 msgstr ""
 
-#: views/admin-page.php:252
+#: views/admin-page.php:257
 msgid "Info"
 msgstr ""
 
-#: views/admin-page.php:253
+#: views/admin-page.php:258
 msgid "Warning"
 msgstr ""
 
-#: views/admin-page.php:254
+#: views/admin-page.php:259
 msgid "Error"
 msgstr ""
 
-#: views/admin-page.php:257
+#: views/admin-page.php:262
 msgid "Export Logs"
 msgstr ""
 
-#: views/admin-page.php:271
+#: views/admin-page.php:276
 msgid "Time"
 msgstr ""
 
-#: views/admin-page.php:272
+#: views/admin-page.php:277
 msgid "Level"
 msgstr ""
 
-#: views/admin-page.php:273
+#: views/admin-page.php:278
 msgid "Message"
 msgstr ""
 
-#: views/admin-page.php:266
+#: views/admin-page.php:271
 msgid "No logs available"
 msgstr ""
 
-#: views/admin-page.php:295
+#: views/admin-page.php:300
 msgid "How to Configure Cloudflare Integration"
 msgstr ""
 
-#: views/admin-page.php:297
+#: views/admin-page.php:302
 msgid "Getting Your API Token"
 msgstr ""
 
-#: views/admin-page.php:299, views/admin-page.php:316
+#: views/admin-page.php:304, views/admin-page.php:321
 msgid "Log in to your Cloudflare dashboard"
 msgstr ""
 
-#: views/admin-page.php:300
+#: views/admin-page.php:305
 msgid "Click on \"My Profile\" in the top right corner"
 msgstr ""
 
-#: views/admin-page.php:301
+#: views/admin-page.php:306
 msgid "Select \"API Tokens\" from the left menu"
 msgstr ""
 
-#: views/admin-page.php:302
+#: views/admin-page.php:307
 msgid "Click \"Create Token\""
 msgstr ""
 
-#: views/admin-page.php:303
+#: views/admin-page.php:308
 msgid "Use the \"Create Custom Token\" option"
 msgstr ""
 
-#: views/admin-page.php:304
+#: views/admin-page.php:309
 msgid "Set the following permissions:"
 msgstr ""
 
-#: views/admin-page.php:306
+#: views/admin-page.php:311
 msgid "Zone - Zone WAF - Edit"
 msgstr ""
 
-#: views/admin-page.php:309
+#: views/admin-page.php:314
 msgid "Set Zone Resources to \"All Zones\""
 msgstr ""
 
-#: views/admin-page.php:310
+#: views/admin-page.php:315
 msgid "Click \"Continue to Summary\" and then \"Create Token\""
 msgstr ""
 
-#: views/admin-page.php:311
+#: views/admin-page.php:316
 msgid "Copy the generated token and paste it in the field above"
 msgstr ""
 
-#: views/admin-page.php:314
+#: views/admin-page.php:319
 msgid "Finding Your Zone ID"
 msgstr ""
 
-#: views/admin-page.php:317
+#: views/admin-page.php:322
 msgid "Select your domain/website"
 msgstr ""
 
-#: views/admin-page.php:318
+#: views/admin-page.php:323
 msgid "Go to the \"Overview\" tab"
 msgstr ""
 
-#: views/admin-page.php:319
+#: views/admin-page.php:324
 msgid "Scroll down to \"API\" section"
 msgstr ""
 
-#: views/admin-page.php:320
+#: views/admin-page.php:325
 msgid "Your Zone ID will be displayed there"
 msgstr ""
 
-#: views/admin-page.php:323
+#: views/admin-page.php:328
 msgid "Setting Up Custom Rules"
 msgstr ""
 
-#: views/admin-page.php:325
+#: views/admin-page.php:330
 msgid "In your Cloudflare dashboard, go to Security > WAF > Custom Rules"
 msgstr ""
 
-#: views/admin-page.php:326
+#: views/admin-page.php:331
 msgid "Click \"Create Rule\""
 msgstr ""
 
-#: views/admin-page.php:327
+#: views/admin-page.php:332
 msgid "Configure the rule:"
 msgstr ""
 
-#: views/admin-page.php:329
+#: views/admin-page.php:334
 msgid "Rule name: \"Block Malicious IPs\""
 msgstr ""
 
-#: views/admin-page.php:330
+#: views/admin-page.php:335
 msgid "Expression: (ip.src in {})"
 msgstr ""
 
-#: views/admin-page.php:331
+#: views/admin-page.php:336
 msgid "Action: Block"
 msgstr ""
 
-#: views/admin-page.php:334
+#: views/admin-page.php:339
 msgid "After creating the rule:"
 msgstr ""
 
-#: views/admin-page.php:336
+#: views/admin-page.php:341
 msgid "The Ruleset ID is shown in the URL when editing the ruleset"
 msgstr ""
 
-#: views/admin-page.php:337
+#: views/admin-page.php:342
 msgid "The Rule ID is shown in the rule details or API response"
 msgstr ""
 
-#: views/admin-page.php:343
+#: views/admin-page.php:348
 msgid "Note: Make sure to keep these IDs secure and never share them publicly."
 msgstr ""

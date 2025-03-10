@@ -66,7 +66,9 @@ gulp.task('rename-files', (done) => {
 // Copy plugin files to release/cloudflare-ip-blocker before zipping
 gulp.task('copy', () => {
     return gulp
-        .src(['**/*', '!node_modules/**', '!gulpfile.js', '!package.json', '!package-lock.json', '!release/**', '!README.md', '!LICENSE'])
+        .src(['**/*', '!node_modules/**', '!gulpfile.js', '!package.json', '!package-lock.json', '!release/**', '!README.md', '!LICENSE'], {
+            encoding: false,
+        })
         .pipe(gulp.dest('release/cloudflare-ip-blocker'))
 })
 
@@ -74,7 +76,7 @@ gulp.task('copy', () => {
 gulp.task(
     'zip',
     gulp.series('copy', () => {
-        return gulp.src('release/cloudflare-ip-blocker/**/*', { base: 'release' }).pipe(zip('cloudflare-ip-blocker.zip')).pipe(gulp.dest('release'))
+        return gulp.src('release/cloudflare-ip-blocker/**/*', { base: 'release', encoding: false }).pipe(zip('cloudflare-ip-blocker.zip')).pipe(gulp.dest('release'))
     })
 )
 
