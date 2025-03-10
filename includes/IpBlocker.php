@@ -96,49 +96,90 @@ class IpBlocker {
         }
     
         $ip = $data['ip'];
+        $event_text = '';
+        if ($event === 'increasedAttackRate') {
+            $event_text = 'increased attack rate';
+        } elseif ($event === 'loginLockout') {
+            $event_text = 'login lockout';
+        }
+        $this->logger->log("Received Wordfence event: {$event_text} for IP {$ip}");
         $threshold = (int) get_option('cfip_failed_attempts', 5); // Ensure threshold is an integer
     
         // If attackCount is set and exceeds the threshold, block immediately
         if (!empty($data['attackCount'])) {
             if ((int) $data['attackCount'] >= $threshold) {
-                $this->block_ip($ip);
+                $result = $this->sync_from_wordfence();
+                if ($result) {
+                    $this->logger->log("[Wordfence] IP {$ip} exceeded threshold, blocked");
+                } else {
+                    $this->logger->log("[Wordfence] Failed to sync IPs from Wordfence", 'error');
+                }
             }
             return;
         }
     
         // Retrieve failed attempts safely
-        $failed_attempts = (int) $this->get_failed_attempts($ip);
-        $failed_attempts++;
-    
+        $failed_attempts_data = $this->get_failed_attempts($ip);
+
+        if ($this->is_block_expired($failed_attempts_data)) {
+            // Expired, reset to 1
+            $failed_attempts = 1;
+        } else {
+            // Still valid, increment count
+            $failed_attempts = (int) $failed_attempts_data['count'] + 1;
+        }
+
         // Update the failed attempts count
         $this->update_failed_attempts($ip, $failed_attempts);
     
         // Block if threshold is reached
         if ($failed_attempts >= $threshold) {
-            $this->block_ip($ip);
+            $result = $this->sync_from_wordfence();
+            if ($result) {
+                $this->logger->log("[Wordfence] IP {$ip} exceeded threshold, blocked");
+            } else {
+                $this->logger->log("[Wordfence] Failed to sync IPs from Wordfence", 'error');
+            }
         }
     }
 
     /**
-     * Get failed login attempts for an IP
+     * Get failed login attempts and block info for an IP.
      *
-     * @param string $ip IP address
-     * @return int Number of failed attempts
+     * @param string $ip The IP address to check.
+     * @return array An array containing 'count' (int), 'timestamp' (int|null), and 'duration' (string|null).
      */
     private function get_failed_attempts($ip) {
         $attempts = get_option('cfip_failed_attempts_log', []);
-        return isset($attempts[$ip]) ? $attempts[$ip] : 0;
+        return isset($attempts[$ip]) ? $attempts[$ip] : ['count' => 0, 'timestamp' => null, 'duration' => null];
     }
 
     /**
-     * Update failed login attempts for an IP
+     * Update the failed login attempts for an IP address.
+     * Stores the count, timestamp, and block duration.
      *
-     * @param string $ip IP address
-     * @param int $count Number of attempts
+     * @param string $ip The IP address to track.
+     * @param int $count The number of failed attempts.
      */
     private function update_failed_attempts($ip, $count) {
         $attempts = get_option('cfip_failed_attempts_log', []);
-        $attempts[$ip] = $count;
+        
+        if ($count === 1) {
+            // If this is the first failure, store the timestamp
+            $attempts[$ip] = [
+                'count' => $count,
+                'timestamp' => time(), 
+                'duration' => get_option('cfip_block_duration', '24h')
+            ];
+        } else {
+            // Otherwise, just update the count
+            if (isset($attempts[$ip])) {
+                $attempts[$ip]['count'] = $count;
+            } else {
+                $attempts[$ip] = ['count' => $count, 'timestamp' => time(), 'duration' => get_option('cfip_block_duration', '24h')];
+            }
+        }
+        
         update_option('cfip_failed_attempts_log', $attempts);
     }
 

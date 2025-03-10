@@ -54,21 +54,13 @@ class CloudflareApi {
         $blocked_ips = get_option('cfip_blocked_ips', array());
         
         // Add new IPs if not already blocked
-        $added = false;
         foreach ($ips as $ip) {
             if (!isset($blocked_ips[$ip])) {
                 $blocked_ips[$ip] = array(
                     'timestamp' => time(),
                     'duration' => get_option('cfip_block_duration', '24h')
                 );
-                // $added = true; // To be set to true only if a new IP is added
             }
-            $added = true; // Always set to true
-        }
-
-        // If no new IPs were added, return true
-        if (!$added) {
-            return true;
         }
 
         // Build expression with all IPs

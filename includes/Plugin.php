@@ -51,7 +51,7 @@ class Plugin {
         add_action('cfip_check_ips', [$this->ip_blocker, 'check_and_block_ips']);
 
         // Hook into Wordfence failed login attempts
-        // add_action('wordfence_security_event', [$this->ip_blocker, 'handle_wordfence_event'], 10, 2);
+        add_action('wordfence_security_event', [$this->ip_blocker, 'handle_wordfence_event'], 10, 2);
 
         // admin_init hook
         add_action('admin_init', [$this, 'check_requirements']);

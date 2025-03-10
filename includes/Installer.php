@@ -6,6 +6,7 @@ class Installer {
      * Plugin activation
      */
     public function activate() {
+
         // Check and create required directories
         $this->check_directories();
 
@@ -80,6 +81,7 @@ class Installer {
         add_option('cfip_blocked_ips', []);
         add_option('cfip_failed_attempts_log', []);
         add_option('cfip_ip_whitelist', []);
+        add_option('cfip_newsletter_subscribed', '0', '', 'yes'); // Add newsletter subscription flag
     }
 
     /**
@@ -87,7 +89,7 @@ class Installer {
      */
     private function create_log_file() {
         $upload_dir = wp_upload_dir();
-        $log_file = $upload_dir['basedir'] . '/cloudflare-ip-blocker.log';
+        $log_file = $upload_dir['basedir'] . '/cloudflare-ip-blocker/cloudflare-ip-blocker.log';
 
         if (!file_exists($log_file)) {
             $handle = fopen($log_file, 'w');
@@ -104,26 +106,14 @@ class Installer {
     private function check_directories() {
         $upload_dir = wp_upload_dir();
         $plugin_dir = $upload_dir['basedir'] . '/cloudflare-ip-blocker';
-        $logs_dir = $plugin_dir . '/logs';
-        $cache_dir = $plugin_dir . '/cache';
 
         // Create main plugin directory
         if (!file_exists($plugin_dir)) {
             wp_mkdir_p($plugin_dir);
         }
 
-        // Create logs directory
-        if (!file_exists($logs_dir)) {
-            wp_mkdir_p($logs_dir);
-        }
-
-        // Create cache directory
-        if (!file_exists($cache_dir)) {
-            wp_mkdir_p($cache_dir);
-        }
-
         // Create .htaccess to prevent direct access
-        $directories = [$plugin_dir, $logs_dir, $cache_dir];
+        $directories = [$plugin_dir];
         foreach ($directories as $dir) {
             $htaccess = $dir . '/.htaccess';
             if (!file_exists($htaccess)) {

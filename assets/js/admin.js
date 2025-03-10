@@ -3,20 +3,20 @@ jQuery(document).ready(function($) {
     $('.cfip-show-token-instructions').on('click', function (e) {
         e.preventDefault();
         $('#cfip-token-instructions').fadeIn(300);
-        $('body').addClass('cfip-modal-open'); // Freeze background scroll
+        $('body').addClass('cfip-modal-open');
     });
 
     // Close button functionality
     $('#cfip-close').on('click', function () {
         $('#cfip-token-instructions').fadeOut(300);
-        $('body').removeClass('cfip-modal-open'); // Unfreeze scroll
+        $('body').removeClass('cfip-modal-open');
     });
 
     // Close modal when clicking outside the content box
     $('#cfip-token-instructions').on('click', function (e) {
         if ($(e.target).is('#cfip-token-instructions')) {
             $('#cfip-token-instructions').fadeOut(300);
-            $('body').removeClass('cfip-modal-open'); // Unfreeze scroll
+            $('body').removeClass('cfip-modal-open');
         }
     });
 
@@ -163,6 +163,69 @@ jQuery(document).ready(function($) {
             },
             complete: function() {
                 $('#cfip-sync-wordfence').prop('disabled', false);
+            }
+        });
+    });
+
+    // Check if user is already subscribed
+    if (cfipAdmin.isSubscribed) {
+        $('.cfip-newsletter-form').hide();
+        $('.cfip-newsletter').append('<div class="cfip-newsletter-success">' +
+            '<p>You are already subscribed!</p>' +
+            '</div>');
+        return;
+    }
+
+    // Newsletter subscription
+    $('.cfip-newsletter-form').on('submit', function (e) {
+        e.preventDefault();
+        const email = $(this).find('input[type="email"]').val();
+        const $message = $('.cfip-newsletter-message');
+        const $submitButton = $(this).find('button');
+        const $form = $(this);
+        const $newsletter = $('.cfip-newsletter');
+
+        $.ajax({
+            url: 'https://polarmass.com/wp-json/cfip/v1/newsletter/signup',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ email: email }),
+            beforeSend: function () {
+                $submitButton.prop('disabled', true);
+                $form.css('opacity', '0.5');
+            },
+            success: function (response) {
+                if (response.success) {
+                    $form.fadeOut(300, function () {
+                        const successMessage = $('<div class="cfip-newsletter-success">' +
+                            '<p>Thank you for subscribing to our newsletter!</p>' +
+                            '</div>').hide();
+                        $(this).after(successMessage);
+                        successMessage.fadeIn(300);
+                    });
+
+                    // Update option via AJAX
+                    $.ajax({
+                        url: cfipAdmin.ajaxUrl,
+                        type: 'POST',
+                        data: {
+                            action: 'cfip_update_newsletter_status',
+                            nonce: cfipAdmin.nonce,
+                        }
+                    });
+                } else {
+                    $message.removeClass('success').addClass('error').text(response.data.message).fadeIn();
+                }
+            },
+            error: function () {
+                $message.removeClass('success').addClass('error').text(cfipAdmin.i18n.error).fadeIn();
+            },
+            complete: function () {
+                $submitButton.prop('disabled', false);
+                $form.css('opacity', '1');
+                setTimeout(function () {
+                    $message.fadeOut();
+                }, 5000);
             }
         });
     });

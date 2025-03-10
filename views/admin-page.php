@@ -4,6 +4,9 @@ if (!defined('ABSPATH')) {
 }
 
 use CloudflareIpBlocker\Logger;
+
+
+$is_subscribed = get_option('cfip_newsletter_subscribed') === '1';
 ?>
 <div class="wrap">
     <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
@@ -168,6 +171,55 @@ use CloudflareIpBlocker\Logger;
 
                 <?php submit_button(); ?>
             </form>
+
+            <div class="cfip-support-section">
+                <h2><?php _e('Support Our Development', 'cloudflare-ip-blocker'); ?></h2>
+                <p><?php _e('Help us continue improving and maintaining this plugin for the WordPress community.', 'cloudflare-ip-blocker'); ?></p>
+                
+                <div class="cfip-buymeacoffee">
+                    <a href="https://www.buymeacoffee.com/polarmass" target="_blank">
+                        <img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;">
+                    </a>
+                </div>
+
+                <div class="cfip-contact-info">
+                    <h3><?php _e('Get in Touch', 'cloudflare-ip-blocker'); ?></h3>
+                    <p><?php _e('Have questions or need assistance? We\'re here to help!', 'cloudflare-ip-blocker'); ?></p>
+                    
+                    <div class="cfip-contact-methods">
+                        <div class="cfip-contact-method">
+                            <i class="dashicons dashicons-email"></i>
+                            <h4><?php _e('Email Support', 'cloudflare-ip-blocker'); ?></h4>
+                            <p><?php _e('For technical issues and general inquiries', 'cloudflare-ip-blocker'); ?></p>
+                            <a href="mailto:contact@polarmass.com">contact@polarmass.com</a>
+                        </div>
+                        
+                        <div class="cfip-contact-method">
+                            <i class="dashicons dashicons-admin-site"></i>
+                            <h4><?php _e('Visit Website', 'cloudflare-ip-blocker'); ?></h4>
+                            <p><?php _e('Documentation and resources', 'cloudflare-ip-blocker'); ?></p>
+                            <a href="https://polarmass.com/" target="_blank">polarmass.com</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cfip-newsletter">
+                <?php if (!$is_subscribed): ?>
+                    <h3><?php _e('Stay Updated', 'cloudflare-ip-blocker'); ?></h3>
+                    <p><?php _e('Subscribe to our newsletter for security tips, updates, and special offers.', 'cloudflare-ip-blocker'); ?></p>
+                    <form class="cfip-newsletter-form">
+                        <input type="email" placeholder="<?php esc_attr_e('Enter your email address', 'cloudflare-ip-blocker'); ?>" required>
+                        <button type="submit"><?php _e('Subscribe', 'cloudflare-ip-blocker'); ?></button>
+                    </form>
+                    <div class="cfip-newsletter-message"></div>
+                <?php else: ?>
+                    <div class="cfip-newsletter-success">
+                        <p><?php _e('Thank you for subscribing to our newsletter!', 'cloudflare-ip-blocker'); ?></p>
+                        <p><?php _e('You\'ll receive updates and security tips directly in your inbox.', 'cloudflare-ip-blocker'); ?></p>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
 
         <div class="cfip-side-panel">
@@ -238,7 +290,7 @@ use CloudflareIpBlocker\Logger;
 
     <div id="cfip-token-instructions" style="display: none;">
         <div id="cfip-token-instructions--content">
-            <button id="cfip-close">X</button> <!-- Close button -->
+            <button id="cfip-close">X</button>
             <h3><?php _e('How to Configure Cloudflare Integration', 'cloudflare-ip-blocker'); ?></h3>
             
             <h4><?php _e('Getting Your API Token', 'cloudflare-ip-blocker'); ?></h4>

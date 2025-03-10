@@ -3,7 +3,7 @@
  * Plugin Name: Polar Mass Advanced IP Blocker
  * Plugin URI: https://polarmass.com/polar-mass-advanced-ip-blocker
  * Description: Automatically blocks malicious IP addresses through Cloudflare integration based on Wordfence failed login attempts.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Polar Mass
  * Author URI: https://polarmass.com
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants
-define('CFIP_BLOCKER_VERSION', '1.0.0');
+define('CFIP_BLOCKER_VERSION', '1.0.1');
 define('CFIP_BLOCKER_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('CFIP_BLOCKER_PLUGIN_URL', plugin_dir_url(__FILE__));
 

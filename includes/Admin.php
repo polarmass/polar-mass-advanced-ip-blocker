@@ -26,6 +26,7 @@ class Admin {
         add_action('wp_ajax_cfip_block_ip', [$this, 'ajax_block_ip']);
         add_action('wp_ajax_cfip_unblock_ip', [$this, 'ajax_unblock_ip']);
         add_action('wp_ajax_cfip_sync_wordfence', [$this, 'ajax_sync_wordfence']);
+        add_action('wp_ajax_cfip_update_newsletter_status', [$this, 'ajax_update_newsletter_status']);
     }
 
     /**
@@ -123,14 +124,14 @@ class Admin {
 
         wp_enqueue_style(
             'cfip-admin-styles',
-            CFIP_BLOCKER_PLUGIN_URL . 'assets/css/admin.css',
+            CFIP_BLOCKER_PLUGIN_URL . 'assets/css/admin.min.css',
             [],
             CFIP_BLOCKER_VERSION
         );
 
         wp_enqueue_script(
             'cfip-admin-script',
-            CFIP_BLOCKER_PLUGIN_URL . 'assets/js/admin.js',
+            CFIP_BLOCKER_PLUGIN_URL . 'assets/js/admin.min.js',
             ['jquery'],
             CFIP_BLOCKER_VERSION,
             true
@@ -139,6 +140,7 @@ class Admin {
         wp_localize_script('cfip-admin-script', 'cfipAdmin', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('cfip-admin-nonce'),
+            'isSubscribed' => get_option('cfip_newsletter_subscribed', 0) == 1,
             'i18n' => [
                 'confirmBlock' => __('Are you sure you want to block this IP?', 'cloudflare-ip-blocker'),
                 'confirmUnblock' => __('Are you sure you want to unblock this IP?', 'cloudflare-ip-blocker'),
@@ -241,6 +243,16 @@ class Admin {
     }
 
     /**
+     * Handle AJAX request to update newsletter status
+     */
+    public function ajax_update_newsletter_status() {
+        check_ajax_referer('cfip-admin-nonce', 'nonce');
+        
+        update_option('cfip_newsletter_subscribed', 1);
+        wp_send_json_success();
+    }
+
+    /**
      * Handle AJAX request to unblock IP
      */
     public function ajax_unblock_ip() {
@@ -291,5 +303,33 @@ class Admin {
         } catch (\Exception $e) {
             wp_send_json_error(['message' => $e->getMessage()]);
         }
+    }
+
+    /**
+     * Handle newsletter subscription
+     */
+    public function ajax_subscribe_newsletter() {
+        check_ajax_referer('cfip-admin-nonce', 'nonce');
+
+        $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+        if (!is_email($email)) {
+            wp_send_json_error(['message' => __('Please enter a valid email address.', 'cloudflare-ip-blocker')]);
+        }
+
+        // Add subscriber to the database
+        $subscribers = get_option('cfip_newsletter_subscribers', []);
+        if (in_array($email, $subscribers)) {
+            wp_send_json_error(['message' => __('You are already subscribed!', 'cloudflare-ip-blocker')]);
+        }
+
+        $subscribers[] = $email;
+        update_option('cfip_newsletter_subscribers', $subscribers);
+
+        // Log the subscription
+        $this->logger->log("New newsletter subscription: {$email}");
+
+        // You can add additional integration here (e.g., with a newsletter service)
+
+        wp_send_json_success(['message' => __('Thank you for subscribing!', 'cloudflare-ip-blocker')]);
     }
 }

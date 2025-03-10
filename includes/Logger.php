@@ -17,7 +17,7 @@ class Logger {
      */
     public function __construct() {
         $upload_dir = wp_upload_dir();
-        $this->log_file = $upload_dir['basedir'] . '/cloudflare-ip-blocker.log';
+        $this->log_file = $upload_dir['basedir'] . '/cloudflare-ip-blocker/cloudflare-ip-blocker.log';
         $this->max_logs = get_option('cfip_max_logs', 1000);
     }
 
@@ -76,8 +76,6 @@ class Logger {
         if ($lines === false) {
             return [];
         }
-
-        // $lines = array_reverse($lines);
 
         foreach ($lines as $line) {
             if (count($logs) >= $limit) {
