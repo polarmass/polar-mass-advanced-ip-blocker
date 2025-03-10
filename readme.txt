@@ -9,7 +9,7 @@ Requires PHP: 7.4
 License: GPLv2 or later  
 License URI: https://www.gnu.org/licenses/gpl-2.0.html  
 
-Automatically block malicious IPs with Cloudflare based on Wordfence failed login attempts. Lightweight and easy to use.
+Automatically block threats at the network level by forwarding Wordfence-detected IPs to Cloudflare.
 
 == Description ==
 
