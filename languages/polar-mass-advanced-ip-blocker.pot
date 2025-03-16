@@ -7,7 +7,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language-Team: Polar Mass\n"
-"POT-Creation-Date: 2025-03-10 11:20+0000\n"
+"POT-Creation-Date: 2025-03-16 14:23+0000\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -43,65 +43,69 @@ msgstr ""
 msgid "An error occurred. Please try again."
 msgstr ""
 
-#: includes/class-admin.php:235
+#: includes/class-admin.php:205
+msgid "Please enter an IP address."
+msgstr ""
+
+#: includes/class-admin.php:236
 msgid "Security check failed. Please try again."
 msgstr ""
 
-#: includes/class-admin.php:272
+#: includes/class-admin.php:273
 msgid "Settings saved successfully."
 msgstr ""
 
-#: includes/class-admin.php:284, includes/class-admin.php:350, includes/class-admin.php:381
+#: includes/class-admin.php:285, includes/class-admin.php:351, includes/class-admin.php:382
 msgid "Unauthorized access."
 msgstr ""
 
-#: includes/class-admin.php:289, includes/class-admin.php:355
+#: includes/class-admin.php:290, includes/class-admin.php:356
 msgid "Invalid IP address."
 msgstr ""
 
 #. translators: %s: error message
-#: includes/class-admin.php:301
+#: includes/class-admin.php:302
 msgid "Failed to block IP %s."
 msgstr ""
 
-#: includes/class-admin.php:298
+#: includes/class-admin.php:299
 msgid "IP %s blocked successfully."
 msgstr ""
 
-#: includes/class-admin.php:324
+#: includes/class-admin.php:325
 msgid "Invalid nonce."
 msgstr ""
 
-#: includes/class-admin.php:331
+#: includes/class-admin.php:332
 msgid "No logs available."
 msgstr ""
 
 #. translators: %s: error message
-#: includes/class-admin.php:367
+#: includes/class-admin.php:368
 msgid "Failed to unblock IP %s."
 msgstr ""
 
-#: includes/class-admin.php:364
+#: includes/class-admin.php:365
 msgid "IP %s unblocked successfully."
 msgstr ""
 
-#: includes/class-admin.php:391
+#: includes/class-admin.php:392
 msgid "Failed to sync IPs from Wordfence."
 msgstr ""
 
-#: includes/class-admin.php:389
+#: includes/class-admin.php:390
 msgid "Successfully synced IPs from Wordfence."
 msgstr ""
 
-#: includes/class-admin.php:406
+#: includes/class-admin.php:407
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: includes/class-admin.php:412
+#: includes/class-admin.php:413
 msgid "You are already subscribed!"
 msgstr ""
 
-#: includes/class-admin.php:423
+#: includes/class-admin.php:424
 msgid "Thank you for subscribing!"
 msgstr ""
 

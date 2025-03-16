@@ -111,7 +111,7 @@ class Ip_Blocker {
 	 */
 	public function handle_wordfence_event( $event, $data ) {
 		// Validate event and required data.
-		if ( ! in_array( $event, array( 'increasedAttackRate', 'loginLockout' ), true ) || empty( $data['ip'] ) ) {
+		if ( ! in_array( $event, array( 'increasedAttackRate', 'loginLockout', 'block' ), true ) || empty( $data['ip'] ) ) {
 			return;
 		}
 
@@ -121,7 +121,10 @@ class Ip_Blocker {
 			$event_text = 'increased attack rate';
 		} elseif ( 'loginLockout' === $event ) {
 			$event_text = 'login lockout';
+		} elseif ( 'block' === $event ) {
+			$event_text = 'block';
 		}
+
 		$this->logger->log( "Received Wordfence event: {$event_text} for IP {$ip}" );
 		$threshold = (int) get_option( 'pmip_failed_attempts', 5 ); // Ensure threshold is an integer.
 
