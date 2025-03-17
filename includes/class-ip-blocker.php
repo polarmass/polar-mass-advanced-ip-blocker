@@ -29,7 +29,14 @@ class Ip_Blocker {
 	 *
 	 * @var array
 	 */
-	private $blocked_ips;
+	private $blocked_ips = array();
+
+	/**
+	 * New IPs to block
+	 *
+	 * @var array
+	 */
+	private $new_ips_to_block = array();
 
 	/**
 	 * Cloudflare API instance
@@ -54,7 +61,7 @@ class Ip_Blocker {
 	 */
 	public function sync_from_wordfence() {
 		if ( ! class_exists( 'wfActivityReport' ) ) {
-			$this->logger->log( 'Wordfence not installed or activated', 'error' );
+			$this->logger->log( '[Wordfence Sync] Wordfence not installed or activated', 'error' );
 			return false;
 		}
 
@@ -83,22 +90,22 @@ class Ip_Blocker {
 			$ips_to_block = array_unique( $ips_to_block );
 
 			if ( empty( $ips_to_block ) ) {
-				$this->logger->log( 'No IPs found that exceed the threshold', 'info' );
+				$this->logger->log( '[Wordfence Sync] No IPs to block', 'info' );
 				return true;
 			}
 
 			// Block IPs in bulk.
-			$result = $this->cloudflare->block_ips( $ips_to_block );
+			$result = $this->block_ips( $ips_to_block );
 
 			if ( $result ) {
-				$this->logger->log( 'Successfully synced ' . count( $ips_to_block ) . ' IPs from Wordfence' );
+				$this->logger->log( '[Wordfence Sync] Successfully synced IPs from Wordfence' );
 				return true;
 			} else {
-				$this->logger->log( 'Failed to sync IPs from Wordfence', 'error' );
+				$this->logger->log( '[Wordfence Sync] Failed to sync IPs from Wordfence', 'error' );
 				return false;
 			}
 		} catch ( \Exception $e ) {
-			$this->logger->log( 'Error syncing from Wordfence: ' . $e->getMessage(), 'error' );
+			$this->logger->log( '[Wordfence Sync] Error syncing IPs from Wordfence: ' . $e->getMessage(), 'error' );
 			return false;
 		}
 	}
@@ -125,7 +132,7 @@ class Ip_Blocker {
 			$event_text = 'block';
 		}
 
-		$this->logger->log( "Received Wordfence event: {$event_text} for IP {$ip}" );
+		$this->logger->log( "[Wordfence] {$event_text} for IP {$ip}" );
 		$threshold = (int) get_option( 'pmip_failed_attempts', 5 ); // Ensure threshold is an integer.
 
 		// If attackCount is set and exceeds the threshold, block immediately.
@@ -213,6 +220,50 @@ class Ip_Blocker {
 	}
 
 	/**
+	 * Block multiple IP addresses
+	 *
+	 * @param array $ips IP addresses to block.
+	 * @return bool Success status.
+	 */
+	public function block_ips( $ips ) {
+		try {
+
+			if ( empty( $ips ) ) {
+				$this->logger->log( '[IP Blocker] No IPs to block', 'info' );
+				return true;
+			}
+
+			foreach ( $ips as $ip ) {
+				if ( ! isset( $this->blocked_ips[ $ip ] ) ) {
+					$this->blocked_ips[ $ip ] = array(
+						'timestamp' => time(),
+						'duration'  => get_option( 'pmip_block_duration', '24h' ),
+					);
+					$this->new_ips_to_block[] = $ip;
+				}
+			}
+			update_option( 'pmip_blocked_ips', $this->blocked_ips );
+			$result = $this->cloudflare->block_ips( $this->blocked_ips );
+			if ( $result ) {
+				$count_new = count( $this->new_ips_to_block );
+				$count_all = count( $this->blocked_ips );
+				if ( $count_new > 0 ) {
+					$this->logger->log( "[IP Blocker] Blocked {$count_new} new IPs. Total blocked: {$count_all}" );
+				} else {
+					$this->logger->log( "[IP Blocker] No new IPs to block. Total blocked: {$count_all}" );
+				}
+				return true;
+			}
+
+			$this->logger->log( '[IP Blocker] Failed to block IPs', 'error' );
+			return false;
+		} catch ( \Exception $e ) {
+			$this->logger->log( '[IP Blocker] Error blocking IPs: ' . $e->getMessage(), 'error' );
+			return false;
+		}
+	}
+
+	/**
 	 * Block an IP address
 	 *
 	 * @param string $ip IP address to block.
@@ -221,12 +272,12 @@ class Ip_Blocker {
 	public function block_ip( $ip ) {
 		try {
 			if ( $this->is_whitelisted( $ip ) ) {
-				$this->logger->log( "IP {$ip} is whitelisted, skipping block" );
+				$this->logger->log( "[IP Blocker] IP {$ip} is whitelisted, skipping block" );
 				return false;
 			}
 
 			if ( $this->is_blocked( $ip ) ) {
-				$this->logger->log( "IP {$ip} is already blocked" );
+				$this->logger->log( "[IP Blocker] IP {$ip} is already blocked" );
 				return true;
 			}
 
@@ -237,14 +288,14 @@ class Ip_Blocker {
 					'duration'  => get_option( 'pmip_block_duration', '24h' ),
 				);
 				update_option( 'pmip_blocked_ips', $this->blocked_ips );
-				$this->logger->log( "Successfully blocked IP: {$ip}" );
+				$this->logger->log( "[IP Blocker] Blocked IP: {$ip}" );
 				return true;
 			}
 
-			$this->logger->log( "Failed to block IP: {$ip}" );
+			$this->logger->log( "[IP Blocker] Failed to block IP: {$ip}" );
 			return false;
 		} catch ( \Exception $e ) {
-			$this->logger->log( "Error blocking IP {$ip}: " . $e->getMessage(), 'error' );
+			$this->logger->log( "[IP Blocker] Error blocking IP {$ip}: " . $e->getMessage(), 'error' );
 			return false;
 		}
 	}
@@ -258,7 +309,7 @@ class Ip_Blocker {
 	public function unblock_ip( $ip ) {
 		try {
 			if ( ! $this->is_blocked( $ip ) ) {
-				$this->logger->log( "IP {$ip} is not blocked" );
+				$this->logger->log( "[IP Blocker] IP {$ip} is not blocked" );
 				return true;
 			}
 
@@ -266,14 +317,14 @@ class Ip_Blocker {
 			if ( $result ) {
 				unset( $this->blocked_ips[ $ip ] );
 				update_option( 'pmip_blocked_ips', $this->blocked_ips );
-				$this->logger->log( "Successfully unblocked IP: {$ip}" );
+				$this->logger->log( "[IP Blocker] Unblocked IP: {$ip}" );
 				return true;
 			}
 
-			$this->logger->log( "Failed to unblock IP: {$ip}" );
+			$this->logger->log( "[IP Blocker] Failed to unblock IP: {$ip}", 'error' );
 			return false;
 		} catch ( \Exception $e ) {
-			$this->logger->log( "Error unblocking IP {$ip}: " . $e->getMessage(), 'error' );
+			$this->logger->log( "[IP Blocker] Error unblocking IP {$ip}: " . $e->getMessage(), 'error' );
 			return false;
 		}
 	}
@@ -307,13 +358,79 @@ class Ip_Blocker {
 			return;
 		}
 
+		$this->cleanup_blocked_ips();
+
 		$this->sync_from_wordfence();
 	}
 
 	/**
-	 * Clean up expired IP blocks
+	 * Real-time block IPs
+	 *
+	 * This function is called by a cron job to block IPs in real-time based on Wordfence hits.
 	 */
-	private function cleanup_blocked_ips() {
+	public function real_time_block_ips() {
+		if ( ! class_exists( 'wfDB' ) ) {
+			$this->logger->log( '[Real-time] Wordfence not installed or activated', 'error' );
+			return false;
+		}
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
+		global $wpdb;
+		$table_wfHits = esc_sql( \wfDB::networkTable( 'wfHits' ) ); // Escape table name manually
+		$search_term  = '%block%'; // Add wildcards to the variable
+
+		$sql = "
+		SELECT 
+		action,
+		COUNT(*) AS attack_count,
+			CASE 
+				WHEN LENGTH(ip) = 16 
+				AND SUBSTRING(ip, 1, 12) = UNHEX('00000000000000000000FFFF') 
+				THEN INET_NTOA(CONV(HEX(SUBSTRING(ip, 13, 4)), 16, 10))
+				ELSE INET6_NTOA(ip)
+			END AS ip_text
+		FROM $table_wfHits
+		WHERE action LIKE %s
+		GROUP BY ip_text, action, 
+			UNIX_TIMESTAMP(FROM_UNIXTIME(FLOOR(attackLogTime))) DIV 60
+		HAVING attack_count > 10
+		ORDER BY UNIX_TIMESTAMP(FROM_UNIXTIME(FLOOR(attackLogTime))) DIV 60 DESC";
+
+		// Only prepare the user input (no placeholders for table names)
+		$results = $wpdb->get_results( $wpdb->prepare( $sql, $search_term ) );
+		// phpcs:enable
+
+		if ( $results ) {
+			$ips_to_block = array();
+			foreach ( $results as $result ) {
+				$ip             = $result->ip_text;
+				$ips_to_block[] = $ip;
+				if ( ! isset( $this->blocked_ips[ $ip ] ) ) {
+					$this->logger->log( "[Real-time] IP {$ip} blocked" );
+				}
+			}
+
+			if ( ! empty( $ips_to_block ) ) {
+				$result = $this->block_ips( $ips_to_block );
+				if ( $result ) {
+					$this->logger->log( '[Real-time] Successfully checked IPs in real-time' );
+				} else {
+					$this->logger->log( '[Real-time] Failed to check IPs in real-time', 'error' );
+				}
+			}
+		}
+	}
+
+	/**
+	 * Clean up expired IP blocks
+	 *
+	 * @param bool $force Whether to force cleanup.
+	 */
+	private function cleanup_blocked_ips( $force = false ) {
+		if ( $force ) {
+			$this->blocked_ips = array();
+			update_option( 'pmip_blocked_ips', $this->blocked_ips );
+			return;
+		}
 		$modified = false;
 		foreach ( $this->blocked_ips as $ip => $data ) {
 			if ( $this->is_block_expired( $data ) ) {

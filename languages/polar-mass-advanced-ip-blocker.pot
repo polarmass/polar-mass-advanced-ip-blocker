@@ -7,7 +7,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language-Team: Polar Mass\n"
-"POT-Creation-Date: 2025-03-16 14:23+0000\n"
+"POT-Creation-Date: 2025-03-17 13:02+0000\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -15,131 +15,143 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: includes/class-admin.php:51
+#: includes/class-admin.php:52
 msgid "Polar Mass Advanced IP Blocker"
 msgstr ""
 
-#: includes/class-admin.php:52
+#: includes/class-admin.php:53
 msgid "PM IP Blocker"
 msgstr ""
 
-#: includes/class-admin.php:200
-msgid "Are you sure you want to block this IP?"
-msgstr ""
-
-#: includes/class-admin.php:201
-msgid "Are you sure you want to unblock this IP?"
-msgstr ""
-
-#: includes/class-admin.php:202
-msgid "Are you sure you want to sync blocked IPs from Wordfence?"
-msgstr ""
-
 #: includes/class-admin.php:203
-msgid "Operation completed successfully."
+msgid "Are you sure you want to run the cron job?"
 msgstr ""
 
 #: includes/class-admin.php:204
-msgid "An error occurred. Please try again."
+msgid "Are you sure you want to block this IP?"
 msgstr ""
 
 #: includes/class-admin.php:205
+msgid "Are you sure you want to unblock this IP?"
+msgstr ""
+
+#: includes/class-admin.php:206
+msgid "Are you sure you want to sync blocked IPs from Wordfence?"
+msgstr ""
+
+#: includes/class-admin.php:207
+msgid "Operation completed successfully."
+msgstr ""
+
+#: includes/class-admin.php:208
+msgid "An error occurred. Please try again."
+msgstr ""
+
+#: includes/class-admin.php:209
 msgid "Please enter an IP address."
 msgstr ""
 
-#: includes/class-admin.php:236
+#: includes/class-admin.php:240
 msgid "Security check failed. Please try again."
 msgstr ""
 
-#: includes/class-admin.php:273
+#: includes/class-admin.php:277
 msgid "Settings saved successfully."
 msgstr ""
 
-#: includes/class-admin.php:285, includes/class-admin.php:351, includes/class-admin.php:382
+#: includes/class-admin.php:290, includes/class-admin.php:315, includes/class-admin.php:381, includes/class-admin.php:412
 msgid "Unauthorized access."
 msgstr ""
 
-#: includes/class-admin.php:290, includes/class-admin.php:356
+#: includes/class-admin.php:302
+msgid "Cron jobs registered successfully."
+msgstr ""
+
+#: includes/class-admin.php:320, includes/class-admin.php:386
 msgid "Invalid IP address."
 msgstr ""
 
 #. translators: %s: error message
-#: includes/class-admin.php:302
+#: includes/class-admin.php:332
 msgid "Failed to block IP %s."
 msgstr ""
 
-#: includes/class-admin.php:299
+#: includes/class-admin.php:329
 msgid "IP %s blocked successfully."
 msgstr ""
 
-#: includes/class-admin.php:325
+#: includes/class-admin.php:355
 msgid "Invalid nonce."
 msgstr ""
 
-#: includes/class-admin.php:332
+#: includes/class-admin.php:362
 msgid "No logs available."
 msgstr ""
 
 #. translators: %s: error message
-#: includes/class-admin.php:368
+#: includes/class-admin.php:398
 msgid "Failed to unblock IP %s."
 msgstr ""
 
-#: includes/class-admin.php:365
+#: includes/class-admin.php:395
 msgid "IP %s unblocked successfully."
 msgstr ""
 
-#: includes/class-admin.php:392
+#: includes/class-admin.php:422
 msgid "Failed to sync IPs from Wordfence."
 msgstr ""
 
-#: includes/class-admin.php:390
+#: includes/class-admin.php:420
 msgid "Successfully synced IPs from Wordfence."
 msgstr ""
 
-#: includes/class-admin.php:407
+#: includes/class-admin.php:437
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: includes/class-admin.php:413
+#: includes/class-admin.php:443
 msgid "You are already subscribed!"
 msgstr ""
 
-#: includes/class-admin.php:424
+#: includes/class-admin.php:454
 msgid "Thank you for subscribing!"
 msgstr ""
 
 #. translators: %d: interval in minutes
 #. translators: %d: Interval in minutes.
-#: includes/class-installer.php:43, includes/class-plugin.php:194
+#: includes/class-installer.php:48, includes/class-installer.php:53, includes/class-plugin.php:179
 msgid "Every %d minutes"
 msgstr ""
 
+#: includes/class-plugin.php:97
+msgid "Polar Mass Advanced IP Blocker requires Wordfence to be installed and activated."
+msgstr ""
+
+#: includes/class-plugin.php:109
+msgid "Polar Mass Advanced IP Blocker requires cron jobs to be registered. Please click the button below to register the cron jobs."
+msgstr ""
+
+#: includes/class-plugin.php:114
+msgid "Register Cron Jobs"
+msgstr ""
+
 #. translators: 1: Required PHP version, 2: Current PHP version
-#: includes/class-plugin.php:93
+#: includes/class-plugin.php:129
 msgid "Polar Mass Advanced IP Blocker requires PHP %1$s or higher. Your current PHP version is %2$s."
 msgstr ""
 
 #. translators: 1: Required WordPress version, 2: Current WordPress version
-#: includes/class-plugin.php:112
+#: includes/class-plugin.php:143
 msgid "Polar Mass Advanced IP Blocker requires WordPress %1$s or higher. Your current WordPress version is %2$s."
 msgstr ""
 
-#: includes/class-plugin.php:128
-msgid "Polar Mass Advanced IP Blocker requires Wordfence to be installed and activated."
-msgstr ""
-
 #. translators: %s: Uploads directory path
-#: includes/class-plugin.php:144
+#: includes/class-plugin.php:157
 msgid "Polar Mass Advanced IP Blocker requires write access to the uploads directory: %s"
 msgstr ""
 
-#: includes/class-plugin.php:159
-msgid "Polar Mass Advanced IP Blocker requires cURL PHP extension to be installed and enabled."
-msgstr ""
-
-#: includes/class-plugin.php:172
-msgid "Polar Mass Advanced IP Blocker requires JSON PHP extension to be installed."
+#: includes/class-plugin.php:185
+msgid "Every minute"
 msgstr ""
 
 #: views/admin-page.php:21

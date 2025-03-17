@@ -32,11 +32,21 @@ class Installer {
 			wp_schedule_event( time(), 'pmip_custom_interval', 'pmip_check_ips' );
 		}
 
+		// Schedule real time cron job.
+		if ( ! wp_next_scheduled( 'pmip_realtime_interval' ) ) {
+			wp_schedule_event( time(), 'pmip_realtime_interval', 'pmip_realtime_interval' );
+		}
+
 		// Add custom cron interval.
 		add_filter(
 			'cron_schedules',
 			function( $schedules ) {
 				$interval                          = get_option( 'pmip_scan_interval', 15 ) * 60;
+				$schedules['pmip_custom_interval'] = array(
+					'interval' => $interval,
+					/* translators: %d: interval in minutes */
+					'display'  => sprintf( esc_html__( 'Every %d minutes', 'polar-mass-advanced-ip-blocker' ), $interval / 60 ),
+				);
 				$schedules['pmip_custom_interval'] = array(
 					'interval' => $interval,
 					/* translators: %d: interval in minutes */
@@ -56,6 +66,9 @@ class Installer {
 	public function deactivate() {
 		// Clear scheduled hooks.
 		wp_clear_scheduled_hook( 'pmip_check_ips' );
+
+		// Clear real time cron jobs.
+		wp_clear_scheduled_hook( 'pmip_realtime_interval' );
 
 		// Flush rewrite rules.
 		flush_rewrite_rules();

@@ -36,6 +36,7 @@ class Admin {
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
+		add_action( 'wp_ajax_pmip_register_cron', array( $this, 'ajax_register_cron' ) );
 		add_action( 'wp_ajax_pmip_block_ip', array( $this, 'ajax_block_ip' ) );
 		add_action( 'wp_ajax_pmip_unblock_ip', array( $this, 'ajax_unblock_ip' ) );
 		add_action( 'wp_ajax_pmip_sync_wordfence', array( $this, 'ajax_sync_wordfence' ) );
@@ -62,6 +63,7 @@ class Admin {
 	 * Register plugin settings
 	 */
 	public function register_settings() {
+		// phpcs:disable PluginCheck.CodeAnalysis.SettingSanitization.register_settingDynamic
 		register_setting(
 			'pmip_settings',
 			'pmip_api_token',
@@ -151,6 +153,7 @@ class Admin {
 				'default'           => 1000,
 			)
 		);
+		// phpcs:enable
 	}
 
 	/**
@@ -197,6 +200,7 @@ class Admin {
 				'nonce'        => wp_create_nonce( 'pmip-admin-nonce' ),
 				'isSubscribed' => get_option( 'pmip_newsletter_subscribed', 0 ) === 1,
 				'i18n'         => array(
+					'confirmCron'    => __( 'Are you sure you want to run the cron job?', 'polar-mass-advanced-ip-blocker' ),
 					'confirmBlock'   => __( 'Are you sure you want to block this IP?', 'polar-mass-advanced-ip-blocker' ),
 					'confirmUnblock' => __( 'Are you sure you want to unblock this IP?', 'polar-mass-advanced-ip-blocker' ),
 					'confirmSync'    => __( 'Are you sure you want to sync blocked IPs from Wordfence?', 'polar-mass-advanced-ip-blocker' ),
@@ -273,6 +277,32 @@ class Admin {
 			__( 'Settings saved successfully.', 'polar-mass-advanced-ip-blocker' ),
 			'updated'
 		);
+	}
+
+	/**
+	 * Handle AJAX request to register cron jobs
+	 */
+	public function ajax_register_cron() {
+		try {
+			check_ajax_referer( 'pmip-admin-nonce', 'nonce' );
+
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error( array( 'message' => __( 'Unauthorized access.', 'polar-mass-advanced-ip-blocker' ) ) );
+			}
+
+			// Register cron jobs.
+			if ( ! wp_next_scheduled( 'pmip_check_ips' ) ) {
+				wp_schedule_event( time(), 'pmip_custom_interval', 'pmip_check_ips' );
+			}
+
+			if ( ! wp_next_scheduled( 'pmip_realtime_check_ips' ) ) {
+				wp_schedule_event( time(), 'pmip_realtime_interval', 'pmip_realtime_check_ips' );
+			}
+
+			wp_send_json_success( array( 'message' => __( 'Cron jobs registered successfully.', 'polar-mass-advanced-ip-blocker' ) ) );
+		} catch ( \Exception $e ) {
+			wp_send_json_error( array( 'message' => $e->getMessage() ) );
+		}
 	}
 
 	/**

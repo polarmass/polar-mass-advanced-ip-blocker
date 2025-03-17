@@ -56,33 +56,20 @@ class Cloudflare_Api {
 	/**
 	 * Block multiple IP addresses
 	 *
-	 * @param array $ips Array of IP addresses to block.
+	 * @param array $blocked_ips Array of IP addresses to block.
 	 * @return bool Success status.
 	 */
-	public function block_ips( $ips ) {
+	public function block_ips( $blocked_ips ) {
 		$zone_id    = get_option( 'pmip_zone_id' );
 		$ruleset_id = get_option( 'pmip_ruleset_id' );
 		$rule_id    = get_option( 'pmip_rule_id' );
 
 		if ( ! $zone_id || ! $ruleset_id || ! $rule_id ) {
-			$this->logger->log( 'Missing required Cloudflare configuration', 'error' );
+			$this->logger->log( '[Cloudflare] Missing required Cloudflare configuration', 'error' );
 			return false;
 		}
 
 		$endpoint = "https://api.cloudflare.com/client/v4/zones/{$zone_id}/rulesets/{$ruleset_id}/rules/{$rule_id}";
-
-		// Get blocked IPs from database.
-		$blocked_ips = get_option( 'pmip_blocked_ips', array() );
-
-		// Add new IPs if not already blocked.
-		foreach ( $ips as $ip ) {
-			if ( ! isset( $blocked_ips[ $ip ] ) ) {
-				$blocked_ips[ $ip ] = array(
-					'timestamp' => time(),
-					'duration'  => get_option( 'pmip_block_duration', '24h' ),
-				);
-			}
-		}
 
 		// Build expression with all IPs.
 		$ip_list    = array_keys( $blocked_ips );
@@ -100,7 +87,6 @@ class Cloudflare_Api {
 		$response = $this->make_request( 'PATCH', $endpoint, $data );
 
 		if ( isset( $response['success'] ) && true === $response['success'] ) {
-			update_option( 'pmip_blocked_ips', $blocked_ips );
 			return true;
 		}
 
@@ -129,7 +115,7 @@ class Cloudflare_Api {
 		$rule_id    = get_option( 'pmip_rule_id' );
 
 		if ( ! $zone_id || ! $ruleset_id || ! $rule_id ) {
-			$this->logger->log( 'Missing required Cloudflare configuration', 'error' );
+			$this->logger->log( '[Cloudflare] Missing required Cloudflare configuration', 'error' );
 			return false;
 		}
 
@@ -202,7 +188,7 @@ class Cloudflare_Api {
 		$response = wp_remote_request( $endpoint, $args );
 
 		if ( is_wp_error( $response ) ) {
-			$this->logger->log( 'API request failed: ' . $response->get_error_message(), 'error' );
+			$this->logger->log( '[Cloudflare] API request failed: ' . $response->get_error_message(), 'error' );
 
 			if ( $attempt < $this->retry_attempts ) {
 				sleep( pow( 2, $attempt - 1 ) ); // Exponential backoff.

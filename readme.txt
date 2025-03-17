@@ -4,7 +4,7 @@ Donate link: https://polarmass.com/donate
 Tags: security, cloudflare, ip-blocker, firewall, wordpress-security  
 Requires at least: 5.8  
 Tested up to: 6.7  
-Stable tag: 1.0.0  
+Stable tag: 1.0.1  
 Requires PHP: 7.4  
 License: GPLv2 or later  
 License URI: https://www.gnu.org/licenses/gpl-2.0.html  

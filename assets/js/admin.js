@@ -1,4 +1,34 @@
 jQuery(document).ready(function ($) {
+    // Register cron manually
+    $('.pmip-register-cron input[type="submit"]').on('click', function (e) {
+        e.preventDefault() // Prevent accidental form submission
+
+        if (!confirm(pmipAdmin.i18n.confirmCron)) return
+
+        let $button = $(this)
+        $button.prop('disabled', true)
+
+        $.post(pmipAdmin.ajaxUrl, {
+            action: 'pmip_register_cron',
+            nonce: pmipAdmin.nonce,
+        })
+            .done((response) => {
+                alert(response.data.message || pmipAdmin.i18n.error)
+                if (response.success) {
+                    $('.pmip-register-cron')
+                        .fadeTo(300, 0)
+                        .slideUp(300, function () {
+                            $(this).remove()
+                        })
+                } else {
+                    $button.prop('disabled', false)
+                }
+            })
+            .fail(() => {
+                alert(pmipAdmin.i18n.error)
+                $button.prop('disabled', false)
+            })
+    })
     // Show API token instructions
     $('.pmip-show-token-instructions').on('click', function (e) {
         e.preventDefault()
