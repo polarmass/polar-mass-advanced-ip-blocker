@@ -145,7 +145,12 @@ class Ip_Blocker {
 					$this->logger->log( '[Wordfence] Failed to sync IPs from Wordfence', 'error' );
 				}
 			}
-			return;
+			/**
+			 * This IP is already blocked by Cloudflare's custom rules, so there's no need for Wordfence to send an alert.  
+			 * Since Wordfence still detects and reports it as a threat (causing false positives), we disable its alert callback.  
+			 */
+			remove_action('wordfence_security_event', 'wfCentral::sendAlertCallback', 10, 3); 
+			return false;
 		}
 
 		// Retrieve failed attempts safely.

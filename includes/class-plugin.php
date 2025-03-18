@@ -76,7 +76,7 @@ class Plugin {
 		add_action( 'pmip_realtime_check_ips', array( $this->ip_blocker, 'real_time_block_ips' ) );
 
 		// Hook into Wordfence failed login attempts.
-		add_action( 'wordfence_security_event', array( $this->ip_blocker, 'handle_wordfence_event' ), 10, 2 );
+		add_action( 'wordfence_security_event', array( $this->ip_blocker, 'handle_wordfence_event' ), 8, 2 );
 
 		// admin_notices hook.
 		add_action( 'admin_notices', array( $this, 'check_requirements' ) );
