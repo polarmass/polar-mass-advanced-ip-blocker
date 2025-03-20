@@ -11,6 +11,11 @@
 
 namespace Pm_Ip_Blocker;
 
+// Prevent direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Class Logger
  *

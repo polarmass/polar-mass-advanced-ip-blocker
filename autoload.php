@@ -7,6 +7,11 @@
  * @package polar-mass-advanced-ip-blocker
  */
 
+// Prevent direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 spl_autoload_register(
 	function ( $class ) {
 		$prefix   = 'Pm_Ip_Blocker\\';

@@ -9,6 +9,11 @@
 
 namespace Pm_Ip_Blocker;
 
+// Prevent direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Handles the core functionality of the Cloudflare IP Blocker plugin.
  */

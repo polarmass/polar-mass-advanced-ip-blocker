@@ -9,6 +9,11 @@
 
 namespace Pm_Ip_Blocker;
 
+// Prevent direct access.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Handles the installation process for the plugin.
  */

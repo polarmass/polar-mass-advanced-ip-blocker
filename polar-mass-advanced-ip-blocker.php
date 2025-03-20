@@ -3,7 +3,7 @@
  * Plugin Name: Polar Mass Advanced IP Blocker
  * Plugin URI: https://polarmass.com/polar-mass-advanced-ip-blocker
  * Description: Automatically blocks malicious IP addresses through Cloudflare integration based on Wordfence failed login attempts.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: Polar Mass
  * Author URI: https://polarmass.com
  * License: GPL v2 or later
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin constants.
-define( 'PMIP_BLOCKER_VERSION', '1.0.1' );
+define( 'PMIP_BLOCKER_VERSION', '1.0.2' );
 define( 'PMIP_BLOCKER_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PMIP_BLOCKER_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
@@ -34,14 +34,21 @@ require_once PMIP_BLOCKER_PLUGIN_DIR . 'autoload.php';
  * Initialize the plugin.
  */
 function pmip_blocker_init() {
-	// Load text domain for translations.
-	load_plugin_textdomain( 'polar-mass-advanced-ip-blocker', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
-
 	// Initialize main plugin class.
 	$plugin = new Pm_Ip_Blocker\Plugin();
 	$plugin->init();
 }
 add_action( 'plugins_loaded', 'pmip_blocker_init' );
+
+/**
+ * Load the plugin text domain.
+ */
+function pmip_blocker_load_textdomain() {
+	// Load text domain for translations.
+	load_plugin_textdomain( 'polar-mass-advanced-ip-blocker', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+}
+
+add_action( 'init', 'pmip_blocker_load_textdomain' );
 
 // Activation hook.
 register_activation_hook(
