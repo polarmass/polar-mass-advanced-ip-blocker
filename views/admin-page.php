@@ -299,51 +299,160 @@ $is_subscribed = get_option( 'pmip_newsletter_subscribed' ) === '1';
 		<div id="pmip-token-instructions--content">
 			<button id="pmip-close">X</button>
 			<h3><?php esc_attr_e( 'How to Configure Cloudflare Integration', 'polar-mass-advanced-ip-blocker' ); ?></h3>
-			
+
 			<h4><?php esc_attr_e( 'Getting Your API Token', 'polar-mass-advanced-ip-blocker' ); ?></h4>
 			<ol>
-				<li><?php esc_attr_e( 'Log in to your Cloudflare dashboard', 'polar-mass-advanced-ip-blocker' ); ?></li>
-				<li><?php esc_attr_e( 'Click on "My Profile" in the top right corner', 'polar-mass-advanced-ip-blocker' ); ?></li>
-				<li><?php esc_attr_e( 'Select "API Tokens" from the left menu', 'polar-mass-advanced-ip-blocker' ); ?></li>
-				<li><?php esc_attr_e( 'Click "Create Token"', 'polar-mass-advanced-ip-blocker' ); ?></li>
-				<li><?php esc_attr_e( 'Use the "Create Custom Token" option', 'polar-mass-advanced-ip-blocker' ); ?></li>
+				<li>
+					<?php esc_attr_e( 'Log in to your Cloudflare dashboard', 'polar-mass-advanced-ip-blocker' ); ?>
+				</li>
+				<li>
+					<?php esc_attr_e( 'Click on "My Profile" in the top right corner', 'polar-mass-advanced-ip-blocker' ); ?>
+				</li>
+				<li>
+					<?php esc_attr_e( 'Select "API Tokens" from the left menu', 'polar-mass-advanced-ip-blocker' ); ?>
+					<br>
+					<a href="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-api-tokens.png' ); ?>" class="pmip-lightbox" target="_blank">
+						<img src="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-api-tokens.png' ); ?>" alt="Cloudflare API Tokens" style="max-width:100%;margin-top:8px;cursor:pointer;">
+					</a>
+				</li>
+				<li>
+					<?php esc_attr_e( 'Click "Create Token"', 'polar-mass-advanced-ip-blocker' ); ?>
+				</li>
+				<li>
+					<?php esc_attr_e( 'Use the "Create Custom Token" option', 'polar-mass-advanced-ip-blocker' ); ?>
+					<br>
+					<a href="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-create-token.png' ); ?>" class="pmip-lightbox" target="_blank">
+						<img src="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-create-token.png' ); ?>" alt="Cloudflare Create Token" style="max-width:100%;margin-top:8px;cursor:pointer;">
+					</a>
+				</li>
 				<li><?php esc_attr_e( 'Set the following permissions:', 'polar-mass-advanced-ip-blocker' ); ?>
 					<ul>
 						<li><?php esc_attr_e( 'Zone - Zone WAF - Edit', 'polar-mass-advanced-ip-blocker' ); ?></li>
 					</ul>
 				</li>
-				<li><?php esc_attr_e( 'Set Zone Resources to "All Zones"', 'polar-mass-advanced-ip-blocker' ); ?></li>
+				<li>
+					<?php esc_attr_e( 'Set Zone Resources to "All Zones"', 'polar-mass-advanced-ip-blocker' ); ?>
+					<br>
+					<a href="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-set-zone-resources.png' ); ?>" class="pmip-lightbox" target="_blank">
+						<img src="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-set-zone-resources.png' ); ?>" alt="Cloudflare Set Zone Resources" style="max-width:100%;margin-top:8px;cursor:pointer;">
+					</a>
+				</li>
 				<li><?php esc_attr_e( 'Click "Continue to Summary" and then "Create Token"', 'polar-mass-advanced-ip-blocker' ); ?></li>
-				<li><?php esc_attr_e( 'Copy the generated token and paste it in the field above', 'polar-mass-advanced-ip-blocker' ); ?></li>
+				<li>
+					<?php esc_attr_e( 'Copy the generated token and paste it in the field above', 'polar-mass-advanced-ip-blocker' ); ?>
+					<br>
+					<a href="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-copy-token.png' ); ?>" class="pmip-lightbox" target="_blank">
+						<img src="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-copy-token.png' ); ?>" alt="Cloudflare Copy Token" style="max-width:100%;margin-top:8px;cursor:pointer;">
+					</a>
+				</li>
 			</ol>
 
 			<h4><?php esc_attr_e( 'Finding Your Zone ID', 'polar-mass-advanced-ip-blocker' ); ?></h4>
 			<ol>
-				<li><?php esc_attr_e( 'Log in to your Cloudflare dashboard', 'polar-mass-advanced-ip-blocker' ); ?></li>
-				<li><?php esc_attr_e( 'Select your domain/website', 'polar-mass-advanced-ip-blocker' ); ?></li>
-				<li><?php esc_attr_e( 'Go to the "Overview" tab', 'polar-mass-advanced-ip-blocker' ); ?></li>
-				<li><?php esc_attr_e( 'Scroll down to "API" section', 'polar-mass-advanced-ip-blocker' ); ?></li>
+				<li>
+					<?php esc_attr_e( 'Log in to your Cloudflare dashboard', 'polar-mass-advanced-ip-blocker' ); ?>
+				</li>
+				<li>
+					<?php esc_attr_e( 'Select your domain/website', 'polar-mass-advanced-ip-blocker' ); ?>
+					<br>
+					<a href="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-select-domain.png' ); ?>" class="pmip-lightbox" target="_blank">
+						<img src="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-select-domain.png' ); ?>" alt="Cloudflare Select Domain" style="max-width:100%;margin-top:8px;cursor:pointer;">
+					</a>
+				</li>
+				<li>
+					<?php esc_attr_e( 'Go to the "Overview" tab and scroll down to the "API" section', 'polar-mass-advanced-ip-blocker' ); ?>
+					<br>
+					<a href="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-api-section.png' ); ?>" class="pmip-lightbox" target="_blank">
+						<img src="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-api-section.png' ); ?>" alt="Cloudflare API Section" style="max-width:100%;margin-top:8px;cursor:pointer;">
+					</a>
+				</li>
 				<li><?php esc_attr_e( 'Your Zone ID will be displayed there', 'polar-mass-advanced-ip-blocker' ); ?></li>
 			</ol>
 
 			<h4><?php esc_attr_e( 'Setting Up Custom Rules', 'polar-mass-advanced-ip-blocker' ); ?></h4>
-			<ol>
-				<li><?php esc_attr_e( 'In your Cloudflare dashboard, go to Security > WAF > Custom Rules', 'polar-mass-advanced-ip-blocker' ); ?></li>
-				<li><?php esc_attr_e( 'Click "Create Rule"', 'polar-mass-advanced-ip-blocker' ); ?></li>
-				<li><?php esc_attr_e( 'Configure the rule:', 'polar-mass-advanced-ip-blocker' ); ?>
-					<ul>
-						<li><?php esc_attr_e( 'Rule name: "Block Malicious IPs"', 'polar-mass-advanced-ip-blocker' ); ?></li>
-						<li><?php esc_attr_e( 'Expression: (ip.src in {})', 'polar-mass-advanced-ip-blocker' ); ?></li>
-						<li><?php esc_attr_e( 'Action: Block', 'polar-mass-advanced-ip-blocker' ); ?></li>
-					</ul>
-				</li>
-				<li><?php esc_attr_e( 'After creating the rule:', 'polar-mass-advanced-ip-blocker' ); ?>
-					<ul>
-						<li><?php esc_attr_e( 'The Ruleset ID is shown in the URL when editing the ruleset', 'polar-mass-advanced-ip-blocker' ); ?></li>
-						<li><?php esc_attr_e( 'The Rule ID is shown in the rule details or API response', 'polar-mass-advanced-ip-blocker' ); ?></li>
-					</ul>
-				</li>
-			</ol>
+			<div class="pmip-tabs">
+				<button class="pmip-tab active" data-tab="old">Old Security Page</button>
+				<button class="pmip-tab" data-tab="new">New Security Page</button>
+			</div>
+			<div class="pmip-tab-content pmip-tab-content-old active">
+				<ol>
+					<li>
+						<?php esc_attr_e( 'In your Cloudflare dashboard, go to Security > WAF > Custom Rules', 'polar-mass-advanced-ip-blocker' ); ?>
+						<br>
+						<a href="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-waf-custom-rules.png' ); ?>" class="pmip-lightbox" target="_blank">
+							<img src="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-waf-custom-rules.png' ); ?>" alt="Cloudflare WAF Custom Rules" style="max-width:100%;margin-top:8px;cursor:pointer;">
+						</a>
+					</li>
+					<li><?php esc_attr_e( 'Click "Create Rule"', 'polar-mass-advanced-ip-blocker' ); ?></li>
+					<li><?php esc_attr_e( 'Configure the rule:', 'polar-mass-advanced-ip-blocker' ); ?>
+						<ul>
+							<li><?php esc_attr_e( 'Rule name: "Block Malicious IPs"', 'polar-mass-advanced-ip-blocker' ); ?></li>
+							<li>
+								<?php esc_attr_e( 'Click on Edit Expression, then paste the following expression: (ip.src in {})', 'polar-mass-advanced-ip-blocker' ); ?>
+								<br>
+								<a href="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-edit-expression.png' ); ?>" class="pmip-lightbox" target="_blank">
+									<img src="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-edit-expression.png' ); ?>" alt="Cloudflare Edit Expression" style="max-width:100%;margin-top:8px;cursor:pointer;">
+								</a>
+							</li>
+							<li><?php esc_attr_e( 'Action: Block', 'polar-mass-advanced-ip-blocker' ); ?></li>
+						</ul>
+					</li>
+					<li><?php esc_attr_e( 'Click on the "Deploy" button', 'polar-mass-advanced-ip-blocker' ); ?></li>
+					<li><?php esc_attr_e( 'After creating the rule:', 'polar-mass-advanced-ip-blocker' ); ?>
+						<ul>
+							<li><?php esc_attr_e( 'The Ruleset ID and Rule ID are shown in the URL when editing the ruleset', 'polar-mass-advanced-ip-blocker' ); ?></li>
+						</ul>
+						<pre style="background:#f6f8fa;padding:8px 12px;border-radius:4px;margin-top:8px;overflow-x:auto;font-size:13px;">
+https://api.cloudflare.com/client/v4/zones/[ZONE_ID]/rulesets/[RULESET_ID]/rules/[RULE_ID]
+</pre>
+<br>
+<a href="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-ruleset-id.png' ); ?>" class="pmip-lightbox" target="_blank">
+	<img src="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-ruleset-id.png' ); ?>" alt="Cloudflare Ruleset ID" style="max-width:100%;margin-top:8px;cursor:pointer;">
+</a>
+					</li>
+				</ol>
+			</div>
+			<div class="pmip-tab-content pmip-tab-content-new">
+				<ol>
+					<li>
+						<?php esc_attr_e( 'In the new Cloudflare dashboard, go to Security > Security Rules', 'polar-mass-advanced-ip-blocker' ); ?>
+						<br>
+						<a href="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-create-rule-new.png' ); ?>" class="pmip-lightbox" target="_blank">
+							<img src="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-create-rule-new.png' ); ?>" alt="Cloudflare Create Rule" style="max-width:100%;margin-top:8px;cursor:pointer;">
+						</a>
+					</li>
+					<li>
+						<?php esc_attr_e( 'Click "Create Rule" and choose "Custom Rule"', 'polar-mass-advanced-ip-blocker' ); ?>
+					</li>
+					<li><?php esc_attr_e( 'Configure the rule:', 'polar-mass-advanced-ip-blocker' ); ?>
+						<ul>
+							<li><?php esc_attr_e( 'Rule name: "Block Malicious IPs"', 'polar-mass-advanced-ip-blocker' ); ?></li>
+							<li>
+								<?php esc_attr_e( 'Click on Edit Expression, then paste the following expression: (ip.src in {})', 'polar-mass-advanced-ip-blocker' ); ?>
+								<br>
+								<a href="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-edit-expression-new.png' ); ?>" class="pmip-lightbox" target="_blank">
+									<img src="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-edit-expression-new.png' ); ?>" alt="Cloudflare Edit Expression" style="max-width:100%;margin-top:8px;cursor:pointer;">
+								</a>
+							</li>
+							<li><?php esc_attr_e( 'Action: Block', 'polar-mass-advanced-ip-blocker' ); ?></li>
+						</ul>
+					</li>
+					<li><?php esc_attr_e( 'Click on the "Deploy" button', 'polar-mass-advanced-ip-blocker' ); ?></li>
+					<li><?php esc_attr_e( 'After creating the rule:', 'polar-mass-advanced-ip-blocker' ); ?>
+						<ul>
+							<li><?php esc_attr_e( 'The Ruleset ID and Rule ID are shown in the URL when editing the ruleset', 'polar-mass-advanced-ip-blocker' ); ?></li>
+						</ul>
+						<pre style="background:#f6f8fa;padding:8px 12px;border-radius:4px;margin-top:8px;overflow-x:auto;font-size:13px;">
+https://api.cloudflare.com/client/v4/zones/[ZONE_ID]/rulesets/[RULESET_ID]/rules/[RULE_ID]
+</pre>
+<br>
+<a href="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-ruleset-id-new.png' ); ?>" class="pmip-lightbox" target="_blank">
+	<img src="<?php echo esc_url( PMIP_BLOCKER_PLUGIN_URL . 'assets/images/cloudflare-ruleset-id-new.png' ); ?>" alt="Cloudflare Ruleset ID" style="max-width:100%;margin-top:8px;cursor:pointer;">
+</a>
+					</li>
+					<li><?php esc_attr_e( 'After creating the rule, note the new location for Ruleset ID and Rule ID', 'polar-mass-advanced-ip-blocker' ); ?></li>
+				</ol>
+			</div>
 
 			<p class="description">
 				<?php esc_attr_e( 'Note: Make sure to keep these IDs secure and never share them publicly.', 'polar-mass-advanced-ip-blocker' ); ?>
@@ -351,3 +460,106 @@ $is_subscribed = get_option( 'pmip_newsletter_subscribed' ) === '1';
 		</div>
 	</div>
 </div>
+
+<!-- Tabbed UI CSS (for custom rules section only) -->
+<style>
+.pmip-tabs {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 16px;
+}
+.pmip-tab {
+	background: #f1f1f1;
+	border: none;
+	padding: 8px 18px;
+	cursor: pointer;
+	border-radius: 4px 4px 0 0;
+	font-weight: 600;
+	color: #333;
+	transition: background 0.2s;
+}
+.pmip-tab.active {
+	background: #fff;
+	border-bottom: 2px solid #0073aa;
+	color: #0073aa;
+}
+.pmip-tab-content {
+	display: none;
+	background: #fff;
+	padding: 16px 0 0 0;
+}
+.pmip-tab-content.active {
+	display: block;
+}
+</style>
+
+<!-- Lightbox CSS -->
+<style>
+.pmip-lightbox-overlay {
+	display: none;
+	position: fixed;
+	z-index: 99999;
+	left: 0; top: 0; width: 100vw; height: 100vh;
+	background: rgba(0,0,0,0.8);
+	justify-content: center;
+	align-items: center;
+}
+.pmip-lightbox-overlay img {
+	max-width: 90vw;
+	max-height: 90vh;
+	border: 4px solid #fff;
+	border-radius: 8px;
+}
+.pmip-lightbox-overlay.active {
+	display: flex;
+}
+.pmip-lightbox-overlay .pmip-lightbox-close {
+	position: absolute;
+	top: 30px; right: 40px;
+	color: #fff;
+	font-size: 2rem;
+	cursor: pointer;
+	z-index: 100000;
+}
+</style>
+
+<!-- Tabbed UI & Lightbox JS (for custom rules section only) -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tabbed UI for custom rules
+    const tabs = document.querySelectorAll('.pmip-tabs .pmip-tab');
+    const tabContents = document.querySelectorAll('.pmip-tab-content');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(tc => tc.classList.remove('active'));
+            this.classList.add('active');
+            document.querySelector('.pmip-tab-content-' + this.dataset.tab).classList.add('active');
+        });
+    });
+
+    // Lightbox
+    const overlay = document.createElement('div');
+    overlay.className = 'pmip-lightbox-overlay';
+    overlay.innerHTML = '<span class="pmip-lightbox-close">&times;</span><img src="" alt="Preview">';
+    document.body.appendChild(overlay);
+
+    document.querySelectorAll('.pmip-lightbox').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            overlay.querySelector('img').src = this.href;
+            overlay.classList.add('active');
+        });
+    });
+    overlay.querySelector('.pmip-lightbox-close').onclick = function() {
+        overlay.classList.remove('active');
+        overlay.querySelector('img').src = '';
+    };
+    overlay.onclick = function(e) {
+        if (e.target === overlay) {
+            overlay.classList.remove('active');
+            overlay.querySelector('img').src = '';
+        }
+    };
+});
+</script>

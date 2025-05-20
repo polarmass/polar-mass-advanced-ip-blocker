@@ -3,8 +3,8 @@ Contributors: polarmass
 Donate link: https://www.buymeacoffee.com/polarmass
 Tags: security, cloudflare, ip-blocker, firewall, wordpress-security  
 Requires at least: 5.8  
-Tested up to: 6.7  
-Stable tag: 1.0.2  
+Tested up to: 6.8.1  
+Stable tag: 1.0.1  
 Requires PHP: 7.4  
 License: GPLv2 or later  
 License URI: https://www.gnu.org/licenses/gpl-2.0.html  
@@ -43,7 +43,10 @@ Yes, you can add and remove IPs manually in the settings.
 
 == Changelog ==
 
-= 1.0.0 =  
+= 1.0.1 - 2025-05-21 =
+- Update Cloudflare setup guide in admin panel with tabs, images, and support for both old and new Security pages.
+
+= 1.0.0 - 2025-03-21 =
 - Initial release  
 - Cloudflare API integration  
 - Automatic IP blocking  

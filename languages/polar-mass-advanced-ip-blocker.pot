@@ -7,7 +7,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language-Team: Polar Mass\n"
-"POT-Creation-Date: 2025-03-20 08:54+0000\n"
+"POT-Creation-Date: 2025-05-20 18:16+0000\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -387,106 +387,114 @@ msgstr ""
 msgid "Getting Your API Token"
 msgstr ""
 
-#: views/admin-page.php:305, views/admin-page.php:322
+#: views/admin-page.php:306, views/admin-page.php:353
 msgid "Log in to your Cloudflare dashboard"
 msgstr ""
 
-#: views/admin-page.php:306
+#: views/admin-page.php:309
 msgid "Click on \"My Profile\" in the top right corner"
 msgstr ""
 
-#: views/admin-page.php:307
+#: views/admin-page.php:312
 msgid "Select \"API Tokens\" from the left menu"
 msgstr ""
 
-#: views/admin-page.php:308
+#: views/admin-page.php:319
 msgid "Click \"Create Token\""
 msgstr ""
 
-#: views/admin-page.php:309
+#: views/admin-page.php:322
 msgid "Use the \"Create Custom Token\" option"
 msgstr ""
 
-#: views/admin-page.php:310
+#: views/admin-page.php:328
 msgid "Set the following permissions:"
 msgstr ""
 
-#: views/admin-page.php:312
+#: views/admin-page.php:330
 msgid "Zone - Zone WAF - Edit"
 msgstr ""
 
-#: views/admin-page.php:315
+#: views/admin-page.php:334
 msgid "Set Zone Resources to \"All Zones\""
 msgstr ""
 
-#: views/admin-page.php:316
+#: views/admin-page.php:340
 msgid "Click \"Continue to Summary\" and then \"Create Token\""
 msgstr ""
 
-#: views/admin-page.php:317
+#: views/admin-page.php:342
 msgid "Copy the generated token and paste it in the field above"
 msgstr ""
 
-#: views/admin-page.php:320
+#: views/admin-page.php:350
 msgid "Finding Your Zone ID"
 msgstr ""
 
-#: views/admin-page.php:323
+#: views/admin-page.php:356
 msgid "Select your domain/website"
 msgstr ""
 
-#: views/admin-page.php:324
-msgid "Go to the \"Overview\" tab"
+#: views/admin-page.php:363
+msgid "Go to the \"Overview\" tab and scroll down to the \"API\" section"
 msgstr ""
 
-#: views/admin-page.php:325
-msgid "Scroll down to \"API\" section"
-msgstr ""
-
-#: views/admin-page.php:326
+#: views/admin-page.php:369
 msgid "Your Zone ID will be displayed there"
 msgstr ""
 
-#: views/admin-page.php:329
+#: views/admin-page.php:372
 msgid "Setting Up Custom Rules"
 msgstr ""
 
-#: views/admin-page.php:331
+#: views/admin-page.php:380
 msgid "In your Cloudflare dashboard, go to Security > WAF > Custom Rules"
 msgstr ""
 
-#: views/admin-page.php:332
+#: views/admin-page.php:386
 msgid "Click \"Create Rule\""
 msgstr ""
 
-#: views/admin-page.php:333
+#: views/admin-page.php:387, views/admin-page.php:427
 msgid "Configure the rule:"
 msgstr ""
 
-#: views/admin-page.php:335
+#: views/admin-page.php:389, views/admin-page.php:429
 msgid "Rule name: \"Block Malicious IPs\""
 msgstr ""
 
-#: views/admin-page.php:336
-msgid "Expression: (ip.src in {})"
+#: views/admin-page.php:391, views/admin-page.php:431
+msgid "Click on Edit Expression, then paste the following expression: (ip.src in {})"
 msgstr ""
 
-#: views/admin-page.php:337
+#: views/admin-page.php:397, views/admin-page.php:437
 msgid "Action: Block"
 msgstr ""
 
-#: views/admin-page.php:340
+#: views/admin-page.php:400, views/admin-page.php:440
+msgid "Click on the \"Deploy\" button"
+msgstr ""
+
+#: views/admin-page.php:401, views/admin-page.php:441
 msgid "After creating the rule:"
 msgstr ""
 
-#: views/admin-page.php:342
-msgid "The Ruleset ID is shown in the URL when editing the ruleset"
+#: views/admin-page.php:403, views/admin-page.php:443
+msgid "The Ruleset ID and Rule ID are shown in the URL when editing the ruleset"
 msgstr ""
 
-#: views/admin-page.php:343
-msgid "The Rule ID is shown in the rule details or API response"
+#: views/admin-page.php:418
+msgid "In the new Cloudflare dashboard, go to Security > Security Rules"
 msgstr ""
 
-#: views/admin-page.php:349
+#: views/admin-page.php:425
+msgid "Click \"Create Rule\" and choose \"Custom Rule\""
+msgstr ""
+
+#: views/admin-page.php:453
+msgid "After creating the rule, note the new location for Ruleset ID and Rule ID"
+msgstr ""
+
+#: views/admin-page.php:458
 msgid "Note: Make sure to keep these IDs secure and never share them publicly."
 msgstr ""
