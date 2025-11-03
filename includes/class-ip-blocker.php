@@ -95,20 +95,17 @@ class Ip_Blocker {
 			$ips_to_block = array_unique( $ips_to_block );
 
 			if ( empty( $ips_to_block ) ) {
-				$this->logger->log( '[Wordfence Sync] No IPs to block', 'info' );
 				return true;
 			}
 
 			// Block IPs in bulk.
 			$result = $this->block_ips( $ips_to_block );
 
-			if ( $result ) {
-				$this->logger->log( '[Wordfence Sync] Successfully synced IPs from Wordfence' );
-				return true;
-			} else {
+			if ( ! $result ) {
 				$this->logger->log( '[Wordfence Sync] Failed to sync IPs from Wordfence', 'error' );
 				return false;
 			}
+			return true;
 		} catch ( \Exception $e ) {
 			$this->logger->log( '[Wordfence Sync] Error syncing IPs from Wordfence: ' . $e->getMessage(), 'error' );
 			return false;
@@ -127,34 +124,17 @@ class Ip_Blocker {
 			return;
 		}
 
-		$ip         = $data['ip'];
-		$event_text = '';
-		if ( 'increasedAttackRate' === $event ) {
-			$event_text = 'increased attack rate';
-		} elseif ( 'loginLockout' === $event ) {
-			$event_text = 'login lockout';
-		} elseif ( 'block' === $event ) {
-			$event_text = 'block';
-		}
+		$ip        = $data['ip'];
+		$threshold = (int) get_option( 'pmip_failed_attempts', 5 );
 
-		$this->logger->log( "[Wordfence] {$event_text} for IP {$ip}" );
-		$threshold = (int) get_option( 'pmip_failed_attempts', 5 ); // Ensure threshold is an integer.
-
-		// If attackCount is set and exceeds the threshold, block immediately.
 		if ( ! empty( $data['attackCount'] ) ) {
 			if ( (int) $data['attackCount'] >= $threshold ) {
 				$result = $this->sync_from_wordfence();
-				if ( $result ) {
-					$this->logger->log( "[Wordfence] IP {$ip} exceeded threshold, blocked" );
-				} else {
+				if ( ! $result ) {
 					$this->logger->log( '[Wordfence] Failed to sync IPs from Wordfence', 'error' );
 				}
 			}
-			/**
-			 * This IP is already blocked by Cloudflare's custom rules, so there's no need for Wordfence to send an alert.  
-			 * Since Wordfence still detects and reports it as a threat (causing false positives), we disable its alert callback.  
-			 */
-			remove_action('wordfence_security_event', 'wfCentral::sendAlertCallback', 10, 3); 
+			remove_action( 'wordfence_security_event', 'wfCentral::sendAlertCallback', 10, 3 );
 			return false;
 		}
 
@@ -175,9 +155,7 @@ class Ip_Blocker {
 		// Block if threshold is reached.
 		if ( $failed_attempts >= $threshold ) {
 			$result = $this->sync_from_wordfence();
-			if ( $result ) {
-				$this->logger->log( "[Wordfence] IP {$ip} exceeded threshold, blocked" );
-			} else {
+			if ( ! $result ) {
 				$this->logger->log( '[Wordfence] Failed to sync IPs from Wordfence', 'error' );
 			}
 		}
@@ -237,9 +215,7 @@ class Ip_Blocker {
 	 */
 	public function block_ips( $ips ) {
 		try {
-
 			if ( empty( $ips ) ) {
-				$this->logger->log( '[IP Blocker] No IPs to block', 'info' );
 				return true;
 			}
 
@@ -254,19 +230,11 @@ class Ip_Blocker {
 			}
 			update_option( 'pmip_blocked_ips', $this->blocked_ips );
 			$result = $this->cloudflare->block_ips( $this->blocked_ips );
-			if ( $result ) {
-				$count_new = count( $this->new_ips_to_block );
-				$count_all = count( $this->blocked_ips );
-				if ( $count_new > 0 ) {
-					$this->logger->log( "[IP Blocker] Blocked {$count_new} new IPs. Total blocked: {$count_all}" );
-				} else {
-					$this->logger->log( "[IP Blocker] No new IPs to block. Total blocked: {$count_all}" );
-				}
-				return true;
+			if ( ! $result ) {
+				$this->logger->log( '[IP Blocker] Failed to block IPs', 'error' );
+				return false;
 			}
-
-			$this->logger->log( '[IP Blocker] Failed to block IPs', 'error' );
-			return false;
+			return true;
 		} catch ( \Exception $e ) {
 			$this->logger->log( '[IP Blocker] Error blocking IPs: ' . $e->getMessage(), 'error' );
 			return false;
@@ -282,12 +250,10 @@ class Ip_Blocker {
 	public function block_ip( $ip ) {
 		try {
 			if ( $this->is_whitelisted( $ip ) ) {
-				$this->logger->log( "[IP Blocker] IP {$ip} is whitelisted, skipping block" );
 				return false;
 			}
 
 			if ( $this->is_blocked( $ip ) ) {
-				$this->logger->log( "[IP Blocker] IP {$ip} is already blocked" );
 				return true;
 			}
 
@@ -298,11 +264,10 @@ class Ip_Blocker {
 					'duration'  => get_option( 'pmip_block_duration', '24h' ),
 				);
 				update_option( 'pmip_blocked_ips', $this->blocked_ips );
-				$this->logger->log( "[IP Blocker] Blocked IP: {$ip}" );
 				return true;
 			}
 
-			$this->logger->log( "[IP Blocker] Failed to block IP: {$ip}" );
+			$this->logger->log( "[IP Blocker] Failed to block IP: {$ip}", 'error' );
 			return false;
 		} catch ( \Exception $e ) {
 			$this->logger->log( "[IP Blocker] Error blocking IP {$ip}: " . $e->getMessage(), 'error' );
@@ -319,7 +284,6 @@ class Ip_Blocker {
 	public function unblock_ip( $ip ) {
 		try {
 			if ( ! $this->is_blocked( $ip ) ) {
-				$this->logger->log( "[IP Blocker] IP {$ip} is not blocked" );
 				return true;
 			}
 
@@ -327,7 +291,6 @@ class Ip_Blocker {
 			if ( $result ) {
 				unset( $this->blocked_ips[ $ip ] );
 				update_option( 'pmip_blocked_ips', $this->blocked_ips );
-				$this->logger->log( "[IP Blocker] Unblocked IP: {$ip}" );
 				return true;
 			}
 
@@ -385,8 +348,8 @@ class Ip_Blocker {
 		}
 		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery
 		global $wpdb;
-		$table_wfHits = esc_sql( \wfDB::networkTable( 'wfHits' ) ); // Escape table name manually
-		$search_term  = '%block%'; // Add wildcards to the variable
+		$table_wfHits = esc_sql( \wfDB::networkTable( 'wfHits' ) ); // Escape table name manually.
+		$search_term  = '%block%'; // Add wildcards to the variable.
 
 		$sql = "
 		SELECT 
@@ -405,7 +368,7 @@ class Ip_Blocker {
 		HAVING attack_count > 10
 		ORDER BY UNIX_TIMESTAMP(FROM_UNIXTIME(FLOOR(attackLogTime))) DIV 60 DESC";
 
-		// Only prepare the user input (no placeholders for table names)
+		// Only prepare the user input (no placeholders for table names).
 		$results = $wpdb->get_results( $wpdb->prepare( $sql, $search_term ) );
 		// phpcs:enable
 
@@ -414,16 +377,11 @@ class Ip_Blocker {
 			foreach ( $results as $result ) {
 				$ip             = $result->ip_text;
 				$ips_to_block[] = $ip;
-				if ( ! isset( $this->blocked_ips[ $ip ] ) ) {
-					$this->logger->log( "[Real-time] IP {$ip} blocked" );
-				}
 			}
 
 			if ( ! empty( $ips_to_block ) ) {
 				$result = $this->block_ips( $ips_to_block );
-				if ( $result ) {
-					$this->logger->log( '[Real-time] Successfully checked IPs in real-time' );
-				} else {
+				if ( ! $result ) {
 					$this->logger->log( '[Real-time] Failed to check IPs in real-time', 'error' );
 				}
 			}

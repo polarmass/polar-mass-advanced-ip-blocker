@@ -53,7 +53,7 @@ add_action( 'init', 'pmip_blocker_load_textdomain' );
 // Activation hook.
 register_activation_hook(
 	__FILE__,
-	function() {
+	function () {
 		$installer = new Pm_Ip_Blocker\Installer();
 		$installer->activate();
 	}
@@ -62,7 +62,7 @@ register_activation_hook(
 // Deactivation hook.
 register_deactivation_hook(
 	__FILE__,
-	function() {
+	function () {
 		$installer = new Pm_Ip_Blocker\Installer();
 		$installer->deactivate();
 	}

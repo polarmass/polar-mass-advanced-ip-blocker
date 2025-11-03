@@ -45,7 +45,7 @@ class Installer {
 		// Add custom cron interval.
 		add_filter(
 			'cron_schedules',
-			function( $schedules ) {
+			function ( $schedules ) {
 				$interval                          = get_option( 'pmip_scan_interval', 15 ) * 60;
 				$schedules['pmip_custom_interval'] = array(
 					'interval' => $interval,

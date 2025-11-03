@@ -121,10 +121,15 @@ class Logger {
 					continue;
 				}
 
+				$message = trim( $matches[3] );
+				if ( strlen( $message ) > 200 ) {
+					$message = substr( $message, 0, 200 ) . '...';
+				}
+
 				$logs[] = array(
 					'timestamp' => $matches[1],
 					'level'     => $matches[2],
-					'message'   => trim( $matches[3] ),
+					'message'   => $message,
 				);
 			}
 		}

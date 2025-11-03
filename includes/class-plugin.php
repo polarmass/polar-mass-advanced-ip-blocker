@@ -108,7 +108,7 @@ class Plugin {
 		if ( ! wp_next_scheduled( 'pmip_check_ips' ) || ! wp_next_scheduled( 'pmip_realtime_check_ips' ) ) {
 			ob_start();
 			wp_nonce_field( 'pmip-admin-nonce', 'pmip-admin-nonce' );
-			$nonce_field = ob_get_clean(); // Capture output safely
+			$nonce_field = ob_get_clean(); // Capture output safely.
 
 			echo '<div class="notice notice-error pmip-register-cron is-dismissible">
 				<p>' . esc_html__( 'Polar Mass Advanced IP Blocker requires cron jobs to be registered. Please click the button below to register the cron jobs.', 'polar-mass-advanced-ip-blocker' ) . '</p>
@@ -123,7 +123,7 @@ class Plugin {
 			$requirements_met = false;
 		}
 
-		if ( $screen && $screen->id !== 'toplevel_page_polar-mass-advanced-ip-blocker' ) {
+		if ( $screen && 'toplevel_page_polar-mass-advanced-ip-blocker' !== $screen->id ) {
 			return $requirements_met;
 		}
 		// Check PHP version.

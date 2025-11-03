@@ -42,6 +42,13 @@ class Cloudflare_Api {
 	private $retry_attempts = 3;
 
 	/**
+	 * Maximum expression size allowed by Cloudflare.
+	 *
+	 * @var int
+	 */
+	private $max_expression_size = 4096;
+
+	/**
 	 * Rule name for IP blocking.
 	 *
 	 * @var string
@@ -56,6 +63,55 @@ class Cloudflare_Api {
 	public function __construct( Logger $logger ) {
 		$this->logger    = $logger;
 		$this->api_token = get_option( 'pmip_api_token' );
+	}
+
+	/**
+	 * Build expression with IP list.
+	 *
+	 * @param array $ip_list Array of IP addresses.
+	 * @return array Array with 'expression' and 'truncated_count' keys.
+	 */
+	private function build_expression_with_limit( $ip_list ) {
+		$base_expression = '(ip.src in {';
+		$closing         = '})';
+		$base_length     = strlen( $base_expression ) + strlen( $closing );
+		$max_ip_length   = $this->max_expression_size - $base_length;
+
+		$ip_string   = implode( ' ', $ip_list );
+		$full_length = strlen( $ip_string );
+
+		if ( ( $base_length + $full_length ) <= $this->max_expression_size ) {
+			return array(
+				'expression'      => $base_expression . $ip_string . $closing,
+				'truncated_count' => 0,
+				'original_count'  => count( $ip_list ),
+			);
+		}
+
+		$truncated_ips   = array();
+		$current_length  = 0;
+		$truncated_count = 0;
+
+		foreach ( $ip_list as $ip ) {
+			$ip_with_separator = ( $current_length > 0 ? ' ' : '' ) . $ip;
+			$ip_length         = strlen( $ip_with_separator );
+
+			if ( ( $base_length + $current_length + $ip_length ) > $this->max_expression_size ) {
+				break;
+			}
+
+			$truncated_ips[] = $ip;
+			$current_length += $ip_length;
+		}
+
+		$truncated_count = count( $ip_list ) - count( $truncated_ips );
+		$expression      = $base_expression . implode( ' ', $truncated_ips ) . $closing;
+
+		return array(
+			'expression'      => $expression,
+			'truncated_count' => $truncated_count,
+			'original_count'  => count( $ip_list ),
+		);
 	}
 
 	/**
@@ -78,7 +134,8 @@ class Cloudflare_Api {
 
 		// Build expression with all IPs.
 		$ip_list    = array_keys( $blocked_ips );
-		$expression = '(ip.src in {' . implode( ' ', $ip_list ) . '})';
+		$result     = $this->build_expression_with_limit( $ip_list );
+		$expression = $result['expression'];
 
 		$data     = array(
 			'action'      => 'block',
@@ -136,7 +193,8 @@ class Cloudflare_Api {
 
 		// Build expression with remaining IPs.
 		$ip_list    = array_keys( $blocked_ips );
-		$expression = '(ip.src in {' . implode( ' ', $ip_list ) . '})';
+		$result     = $this->build_expression_with_limit( $ip_list );
+		$expression = $result['expression'];
 
 		$data = array(
 			'action'      => 'block',
