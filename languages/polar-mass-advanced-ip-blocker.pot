@@ -7,7 +7,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language-Team: Polar Mass\n"
-"POT-Creation-Date: 2025-11-15 08:42+0000\n"
+"POT-Creation-Date: 2025-11-15 10:16+0000\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -15,125 +15,125 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: includes/class-admin.php:63
+#: includes/class-admin.php:64
 msgid "Polar Mass Advanced IP Blocker"
 msgstr ""
 
-#: includes/class-admin.php:64
+#: includes/class-admin.php:65
 msgid "PM IP Blocker"
 msgstr ""
 
-#: includes/class-admin.php:244
+#: includes/class-admin.php:245
 msgid "Are you sure you want to run the cron job?"
 msgstr ""
 
-#: includes/class-admin.php:245
+#: includes/class-admin.php:246
 msgid "Are you sure you want to block this IP?"
 msgstr ""
 
-#: includes/class-admin.php:246
+#: includes/class-admin.php:247
 msgid "Are you sure you want to unblock this IP?"
 msgstr ""
 
-#: includes/class-admin.php:247
+#: includes/class-admin.php:248
 msgid "Are you sure you want to sync blocked IPs from Wordfence?"
 msgstr ""
 
-#: includes/class-admin.php:248
+#: includes/class-admin.php:249
 msgid "Operation completed successfully."
 msgstr ""
 
-#: includes/class-admin.php:249
+#: includes/class-admin.php:250
 msgid "An error occurred. Please try again."
 msgstr ""
 
-#: includes/class-admin.php:250
+#: includes/class-admin.php:251
 msgid "Please enter an IP address."
 msgstr ""
 
-#: includes/class-admin.php:296
+#: includes/class-admin.php:297
 msgid "Security check failed. Please try again."
 msgstr ""
 
-#: includes/class-admin.php:341
+#: includes/class-admin.php:342
 msgid "Settings saved successfully."
 msgstr ""
 
-#: includes/class-admin.php:354, includes/class-admin.php:379, includes/class-admin.php:445, includes/class-admin.php:476, includes/class-admin.php:669, includes/class-admin.php:704, includes/class-admin.php:751, includes/class-admin.php:775, includes/class-admin.php:800, includes/class-admin.php:924
+#: includes/class-admin.php:355, includes/class-admin.php:380, includes/class-admin.php:446, includes/class-admin.php:477, includes/class-admin.php:670, includes/class-admin.php:705, includes/class-admin.php:752, includes/class-admin.php:776, includes/class-admin.php:801, includes/class-admin.php:915, includes/class-admin.php:962
 msgid "Unauthorized access."
 msgstr ""
 
-#: includes/class-admin.php:366
+#: includes/class-admin.php:367
 msgid "Cron jobs registered successfully."
 msgstr ""
 
-#: includes/class-admin.php:384, includes/class-admin.php:450
+#: includes/class-admin.php:385, includes/class-admin.php:451
 msgid "Invalid IP address."
 msgstr ""
 
 #. translators: %s: error message
-#: includes/class-admin.php:396
+#: includes/class-admin.php:397
 msgid "Failed to block IP %s."
 msgstr ""
 
-#: includes/class-admin.php:393
+#: includes/class-admin.php:394
 msgid "IP %s blocked successfully."
 msgstr ""
 
-#: includes/class-admin.php:419
+#: includes/class-admin.php:420
 msgid "Invalid nonce."
 msgstr ""
 
-#: includes/class-admin.php:426
+#: includes/class-admin.php:427
 msgid "No logs available."
 msgstr ""
 
 #. translators: %s: error message
-#: includes/class-admin.php:462
+#: includes/class-admin.php:463
 msgid "Failed to unblock IP %s."
 msgstr ""
 
-#: includes/class-admin.php:459
+#: includes/class-admin.php:460
 msgid "IP %s unblocked successfully."
 msgstr ""
 
-#: includes/class-admin.php:486
+#: includes/class-admin.php:487
 msgid "Failed to sync IPs from Wordfence."
 msgstr ""
 
-#: includes/class-admin.php:484
+#: includes/class-admin.php:485
 msgid "Successfully synced IPs from Wordfence."
 msgstr ""
 
-#: includes/class-admin.php:501
+#: includes/class-admin.php:502
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: includes/class-admin.php:507
+#: includes/class-admin.php:508
 msgid "You are already subscribed!"
 msgstr ""
 
-#: includes/class-admin.php:513
+#: includes/class-admin.php:514
 msgid "Thank you for subscribing!"
 msgstr ""
 
-#: includes/class-admin.php:675
+#: includes/class-admin.php:676
 msgid "Please enter your master token."
 msgstr ""
 
-#: includes/class-admin.php:710
+#: includes/class-admin.php:711
 msgid "Please select a zone."
 msgstr ""
 
-#: includes/class-admin.php:718
+#: includes/class-admin.php:719
 msgid "No API token found. Please connect first."
 msgstr ""
 
-#: includes/class-admin.php:733
+#: includes/class-admin.php:734
 msgid "Zone configured successfully! Rule created and ready to use."
 msgstr ""
 
-#: includes/class-admin.php:809
+#: includes/class-admin.php:810
 msgid "Cloudflare configuration is incomplete. Please reconnect."
 msgstr ""
 
@@ -141,56 +141,61 @@ msgstr ""
 msgid "Connection test failed. Unable to access Cloudflare zones. Please check your API token."
 msgstr ""
 
-#: includes/class-admin.php:838
+#: includes/class-admin.php:837
 msgid "Connection test failed. The configured zone ID was not found in your account."
 msgstr ""
 
-#: includes/class-admin.php:899
+#: includes/class-admin.php:890
 msgid "Connection test failed. Zone access confirmed, but rule details could not be retrieved. Please check your configuration or try again later."
 msgstr ""
 
-#: includes/class-admin.php:891
+#: includes/class-admin.php:883
 msgid "Connection test failed. The ruleset could not be found. Please check your ruleset ID or reset and reconnect."
 msgstr ""
 
-#: includes/class-admin.php:884
+#: includes/class-admin.php:877
 msgid "Connection test failed. Ruleset exists but the specific rule could not be found. The rule may have been deleted. Please check your rule ID or reset and reconnect."
 msgstr ""
 
-#: includes/class-admin.php:851
+#: includes/class-admin.php:847
 msgid "enabled"
 msgstr ""
 
-#: includes/class-admin.php:852
+#: includes/class-admin.php:848
 msgid "disabled"
 msgstr ""
 
-#: includes/class-admin.php:858
+#: includes/class-admin.php:854
 msgid "Connection verified successfully! Rule is %s and operational."
 msgstr ""
 
 #. translators: %s: Error message
-#: includes/class-admin.php:909
+#: includes/class-admin.php:900
 msgid "Connection test failed: %s"
 msgstr ""
 
-#: includes/class-admin.php:940
+#: includes/class-admin.php:950
 msgid "Cloudflare connection settings have been reset. You can now set up a new connection."
 msgstr ""
 
-#: includes/class-cloudflare-api.php:142, includes/class-cloudflare-api.php:194
+#: includes/class-cloudflare-api.php:317, includes/class-cloudflare-api.php:383
 msgid "Account ID not found. Please ensure zone is configured."
 msgstr ""
 
-#: includes/class-cloudflare-api.php:173
+#: includes/class-cloudflare-api.php:362
 msgid "Failed to retrieve IP lists."
 msgstr ""
 
-#: includes/class-cloudflare-api.php:216
+#. translators: %d: Maximum number of IP lists allowed
+#: includes/class-cloudflare-api.php:394
+msgid "Cannot create IP list. You have reached the maximum number of IP lists (%d) allowed by your Cloudflare plan. Please upgrade your plan or delete an existing IP list."
+msgstr ""
+
+#: includes/class-cloudflare-api.php:419
 msgid "IP list created successfully."
 msgstr ""
 
-#: includes/class-cloudflare-api.php:220
+#: includes/class-cloudflare-api.php:423
 msgid "Unknown error"
 msgstr ""
 
@@ -198,28 +203,32 @@ msgstr ""
 msgid "Successfully connected to Cloudflare using existing token! Please select a zone from the list below."
 msgstr ""
 
-#: includes/class-cloudflare-token-manager.php:77
+#: includes/class-cloudflare-token-manager.php:79
+msgid "Successfully connected to Cloudflare using existing token for this domain! Please select a zone from the list below."
+msgstr ""
+
+#: includes/class-cloudflare-token-manager.php:93
 msgid "Failed to fetch required permissions. Please ensure your master token has API Tokens Write permission."
 msgstr ""
 
-#: includes/class-cloudflare-token-manager.php:86
+#: includes/class-cloudflare-token-manager.php:102
 msgid "Failed to generate scoped token. Please check your master token permissions."
 msgstr ""
 
-#: includes/class-cloudflare-token-manager.php:98
+#: includes/class-cloudflare-token-manager.php:114
 msgid "No zones found in your Cloudflare account. Please check your master token permissions."
 msgstr ""
 
-#: includes/class-cloudflare-token-manager.php:106
+#: includes/class-cloudflare-token-manager.php:122
 msgid "Successfully connected to Cloudflare! Please select a zone from the list below."
 msgstr ""
 
 #. translators: %s: Error message
-#: includes/class-cloudflare-token-manager.php:115
+#: includes/class-cloudflare-token-manager.php:131
 msgid "Auto-connect failed: %s"
 msgstr ""
 
-#: includes/class-cloudflare-token-manager.php:966
+#: includes/class-cloudflare-token-manager.php:1089
 msgid "Failed to create custom rule. Please check your token permissions."
 msgstr ""
 
@@ -260,551 +269,575 @@ msgstr ""
 msgid "Every minute"
 msgstr ""
 
-#: views/admin-page.php:56
+#: views/admin-page.php:64
 msgid "Cloudflare Connection"
 msgstr ""
 
-#: views/admin-page.php:100, views/admin-page.php:609
+#: views/admin-page.php:164, views/admin-page.php:673
 msgid "Warning"
 msgstr ""
 
-#: views/admin-page.php:104
+#: views/admin-page.php:168
 msgid "Connection could not be verified. This may be a temporary network issue. Please reconnect or check your configuration."
 msgstr ""
 
-#: views/admin-page.php:109
+#: views/admin-page.php:173
 msgid "Reconnect"
 msgstr ""
 
-#: views/admin-page.php:112, views/admin-page.php:91
+#: views/admin-page.php:176, views/admin-page.php:155
 msgid "Reset Settings"
 msgstr ""
 
-#: views/admin-page.php:115, views/admin-page.php:94
+#: views/admin-page.php:179, views/admin-page.php:158
 msgid "View Details"
 msgstr ""
 
-#: views/admin-page.php:71
+#: views/admin-page.php:79
 msgid "Connected"
 msgstr ""
 
-#: views/admin-page.php:75, views/admin-page.php:139
+#: views/admin-page.php:83, views/admin-page.php:203
 msgid "Zone:"
 msgstr ""
 
-#: views/admin-page.php:79
+#: views/admin-page.php:87
 msgid "Rule Status:"
 msgstr ""
 
-#: views/admin-page.php:81
+#: views/admin-page.php:89
 msgid "Enabled"
 msgstr ""
 
-#: views/admin-page.php:81
+#: views/admin-page.php:89
 msgid "Disabled"
 msgstr ""
 
-#: views/admin-page.php:88
+#: views/admin-page.php:100, views/admin-page.php:95
+msgid "Plan:"
+msgstr ""
+
+#: views/admin-page.php:101, views/admin-page.php:118, views/admin-page.php:142
+msgid "Loading..."
+msgstr ""
+
+#: views/admin-page.php:117, views/admin-page.php:106
+msgid "Rules:"
+msgstr ""
+
+#: views/admin-page.php:141, views/admin-page.php:123
+msgid "IP Lists:"
+msgstr ""
+
+#: views/admin-page.php:135
+msgid "max %d items"
+msgstr ""
+
+#: views/admin-page.php:148
 msgid "Test Connection"
 msgstr ""
 
-#: views/admin-page.php:63
+#: views/admin-page.php:152
+msgid "Refresh Status"
+msgstr ""
+
+#: views/admin-page.php:71
 msgid "Not Connected"
 msgstr ""
 
-#: views/admin-page.php:66
+#: views/admin-page.php:74
 msgid "Not connected to Cloudflare. Connect now to enable IP blocking."
 msgstr ""
 
-#: views/admin-page.php:125
+#: views/admin-page.php:189
 msgid "Connection Details"
 msgstr ""
 
-#: views/admin-page.php:128
+#: views/admin-page.php:192
 msgid "API Token:"
 msgstr ""
 
-#: views/admin-page.php:133
+#: views/admin-page.php:197
 msgid "Not set"
 msgstr ""
 
-#: views/admin-page.php:152
+#: views/admin-page.php:216
 msgid "Ruleset ID:"
 msgstr ""
 
-#: views/admin-page.php:158
+#: views/admin-page.php:222
 msgid "Rule:"
 msgstr ""
 
-#: views/admin-page.php:164
+#: views/admin-page.php:228
 msgid "MaliciousIPs - Polar Mass Advanced IP Blocker"
 msgstr ""
 
-#: views/admin-page.php:179
+#: views/admin-page.php:243
 msgid "We'll help you connect to Cloudflare in 2 simple steps."
 msgstr ""
 
-#: views/admin-page.php:186
+#: views/admin-page.php:250
 msgid "Enter Your Master Token"
 msgstr ""
 
-#: views/admin-page.php:189
+#: views/admin-page.php:253
 msgid "We'll use this to create a secure, limited-access token for your site."
 msgstr ""
 
-#: views/admin-page.php:195
+#: views/admin-page.php:259
 msgid "Generated API Token:"
 msgstr ""
 
-#: views/admin-page.php:204
+#: views/admin-page.php:268
 msgid "Master Token:"
 msgstr ""
 
-#: views/admin-page.php:209
+#: views/admin-page.php:273
 msgid "Enter your master token"
 msgstr ""
 
-#: views/admin-page.php:216
+#: views/admin-page.php:280
 msgid "Token with \"Create Additional Tokens\" permission."
 msgstr ""
 
-#: views/admin-page.php:217
+#: views/admin-page.php:281
 msgid "Get your master token"
 msgstr ""
 
-#: views/admin-page.php:223
+#: views/admin-page.php:287
 msgid "Your Server IP:"
 msgstr ""
 
-#: views/admin-page.php:226
+#: views/admin-page.php:290
 msgid "(Private IP detected)"
 msgstr ""
 
-#: views/admin-page.php:229
+#: views/admin-page.php:293
 msgid "Use this IP in \"Client IP Address Filtering\" when creating your master token for extra security."
 msgstr ""
 
-#: views/admin-page.php:236
+#: views/admin-page.php:300
 msgid "Connect to Cloudflare"
 msgstr ""
 
-#: views/admin-page.php:248
+#: views/admin-page.php:312
 msgid "Select Your Zone"
 msgstr ""
 
-#: views/admin-page.php:251
+#: views/admin-page.php:315
 msgid "Choose the Cloudflare zone (domain) you want to protect."
 msgstr ""
 
-#: views/admin-page.php:257
+#: views/admin-page.php:321
 msgid "Select Zone:"
 msgstr ""
 
-#: views/admin-page.php:260
+#: views/admin-page.php:324
 msgid "-- Please select a zone --"
 msgstr ""
 
-#: views/admin-page.php:265
+#: views/admin-page.php:329
 msgid "Save & Create Rule"
 msgstr ""
 
-#: views/admin-page.php:279
+#: views/admin-page.php:343
 msgid "Advanced: Manual Configuration"
 msgstr ""
 
-#: views/admin-page.php:284
+#: views/admin-page.php:348
 msgid "Note:"
 msgstr ""
 
-#: views/admin-page.php:285
+#: views/admin-page.php:349
 msgid "Manual setup requires existing Cloudflare API token, Zone ID, Ruleset ID, and Rule ID. Auto Connect is recommended for easier setup."
 msgstr ""
 
-#: views/admin-page.php:294
+#: views/admin-page.php:358
 msgid "Cloudflare API Token"
 msgstr ""
 
 #. translators: %s: link to instructions
-#: views/admin-page.php:306
+#: views/admin-page.php:370
 msgid "Enter your Cloudflare API token. %s"
 msgstr ""
 
-#: views/admin-page.php:307
+#: views/admin-page.php:371
 msgid "How to get your API token?"
 msgstr ""
 
-#: views/admin-page.php:315
+#: views/admin-page.php:379
 msgid "Zone ID"
 msgstr ""
 
-#: views/admin-page.php:324
+#: views/admin-page.php:388
 msgid "Enter your Cloudflare Zone ID. Found in the Overview tab of your domain."
 msgstr ""
 
-#: views/admin-page.php:330
+#: views/admin-page.php:394
 msgid "Ruleset ID"
 msgstr ""
 
-#: views/admin-page.php:339
+#: views/admin-page.php:403
 msgid "Enter your Cloudflare Ruleset ID. Found in the WAF > Custom Rules section."
 msgstr ""
 
-#: views/admin-page.php:345
+#: views/admin-page.php:409
 msgid "Rule ID"
 msgstr ""
 
-#: views/admin-page.php:354
+#: views/admin-page.php:418
 msgid "Enter your Cloudflare Rule ID. Found in the specific rule settings under WAF > Custom Rules."
 msgstr ""
 
-#: views/admin-page.php:360
+#: views/admin-page.php:424
 msgid "Save Manual Configuration"
 msgstr ""
 
-#: views/admin-page.php:372
+#: views/admin-page.php:436
 msgid "IP List Configuration"
 msgstr ""
 
-#: views/admin-page.php:376
+#: views/admin-page.php:440
 msgid "Connect to Cloudflare above to configure IP lists."
 msgstr ""
 
-#: views/admin-page.php:383
+#: views/admin-page.php:447
 msgid "Use Cloudflare IP List"
 msgstr ""
 
-#: views/admin-page.php:396
+#: views/admin-page.php:460
 msgid "When enabled, IPs will be stored in a Cloudflare IP List and referenced in rules using (ip.src in $listname). When disabled, IPs are embedded directly in the rule expression."
 msgstr ""
 
-#: views/admin-page.php:402
+#: views/admin-page.php:466
 msgid "IP List Status"
 msgstr ""
 
-#: views/admin-page.php:408
+#: views/admin-page.php:472
 msgid "Loading IP lists information..."
 msgstr ""
 
-#: views/admin-page.php:413
+#: views/admin-page.php:477
 msgid "Refresh Lists"
 msgstr ""
 
-#: views/admin-page.php:416
+#: views/admin-page.php:480
 msgid "Create IP List"
 msgstr ""
 
-#: views/admin-page.php:432
+#: views/admin-page.php:496
 msgid "General Settings"
 msgstr ""
 
-#: views/admin-page.php:436
+#: views/admin-page.php:500
 msgid "Plugin Status"
 msgstr ""
 
-#: views/admin-page.php:441
+#: views/admin-page.php:505
 msgid "Active"
 msgstr ""
 
-#: views/admin-page.php:444
+#: views/admin-page.php:508
 msgid "Inactive"
 msgstr ""
 
-#: views/admin-page.php:451
+#: views/admin-page.php:515
 msgid "Scan Interval"
 msgstr ""
 
-#: views/admin-page.php:456
+#: views/admin-page.php:520
 msgid "5 minutes"
 msgstr ""
 
-#: views/admin-page.php:459
+#: views/admin-page.php:523
 msgid "15 minutes"
 msgstr ""
 
-#: views/admin-page.php:462
+#: views/admin-page.php:526
 msgid "30 minutes"
 msgstr ""
 
-#: views/admin-page.php:465
+#: views/admin-page.php:529
 msgid "60 minutes"
 msgstr ""
 
-#: views/admin-page.php:472
+#: views/admin-page.php:536
 msgid "Failed Attempts Threshold"
 msgstr ""
 
-#: views/admin-page.php:483
+#: views/admin-page.php:547
 msgid "Number of failed login attempts before blocking (3-10)"
 msgstr ""
 
-#: views/admin-page.php:489
+#: views/admin-page.php:553
 msgid "Block Duration"
 msgstr ""
 
-#: views/admin-page.php:494
+#: views/admin-page.php:558
 msgid "24 Hours"
 msgstr ""
 
-#: views/admin-page.php:497
+#: views/admin-page.php:561
 msgid "7 Days"
 msgstr ""
 
-#: views/admin-page.php:500
+#: views/admin-page.php:564
 msgid "Permanent"
 msgstr ""
 
-#: views/admin-page.php:507
+#: views/admin-page.php:571
 msgid "Maximum Log Entries"
 msgstr ""
 
-#: views/admin-page.php:517
+#: views/admin-page.php:581
 msgid "Maximum number of log entries to keep"
 msgstr ""
 
-#: views/admin-page.php:530
+#: views/admin-page.php:594
 msgid "Support Our Development"
 msgstr ""
 
-#: views/admin-page.php:531
+#: views/admin-page.php:595
 msgid "Help us continue improving and maintaining this plugin for the WordPress community."
 msgstr ""
 
-#: views/admin-page.php:540
+#: views/admin-page.php:604
 msgid "Get in Touch"
 msgstr ""
 
-#: views/admin-page.php:541
+#: views/admin-page.php:605
 msgid "Have questions or need assistance? We're here to help!"
 msgstr ""
 
-#: views/admin-page.php:546
+#: views/admin-page.php:610
 msgid "Email Support"
 msgstr ""
 
-#: views/admin-page.php:547
+#: views/admin-page.php:611
 msgid "For technical issues and general inquiries"
 msgstr ""
 
-#: views/admin-page.php:553
+#: views/admin-page.php:617
 msgid "Visit Website"
 msgstr ""
 
-#: views/admin-page.php:554
+#: views/admin-page.php:618
 msgid "Documentation and resources"
 msgstr ""
 
-#: views/admin-page.php:571
+#: views/admin-page.php:635
 msgid "Thank you for subscribing to our newsletter!"
 msgstr ""
 
-#: views/admin-page.php:572
+#: views/admin-page.php:636
 msgid "You'll receive updates and security tips directly in your inbox."
 msgstr ""
 
-#: views/admin-page.php:562
+#: views/admin-page.php:626
 msgid "Stay Updated"
 msgstr ""
 
-#: views/admin-page.php:563
+#: views/admin-page.php:627
 msgid "Subscribe to our newsletter for security tips, updates, and special offers."
 msgstr ""
 
-#: views/admin-page.php:565
+#: views/admin-page.php:629
 msgid "Enter your email address"
 msgstr ""
 
-#: views/admin-page.php:566
+#: views/admin-page.php:630
 msgid "Subscribe"
 msgstr ""
 
-#: views/admin-page.php:583
+#: views/admin-page.php:647
 msgid "Manual IP Management"
 msgstr ""
 
-#: views/admin-page.php:585
+#: views/admin-page.php:649
 msgid "Enter IP address"
 msgstr ""
 
-#: views/admin-page.php:587
+#: views/admin-page.php:651
 msgid "Block IP"
 msgstr ""
 
-#: views/admin-page.php:590
+#: views/admin-page.php:654
 msgid "Unblock IP"
 msgstr ""
 
-#: views/admin-page.php:595
+#: views/admin-page.php:659
 msgid "Sync from Wordfence"
 msgstr ""
 
-#: views/admin-page.php:598
+#: views/admin-page.php:662
 msgid "Manually sync blocked IPs from Wordfence"
 msgstr ""
 
-#: views/admin-page.php:604
+#: views/admin-page.php:668
 msgid "Recent Activity Logs"
 msgstr ""
 
-#: views/admin-page.php:607
+#: views/admin-page.php:671
 msgid "All Levels"
 msgstr ""
 
-#: views/admin-page.php:608
+#: views/admin-page.php:672
 msgid "Info"
 msgstr ""
 
-#: views/admin-page.php:610
+#: views/admin-page.php:674
 msgid "Error"
 msgstr ""
 
-#: views/admin-page.php:613
+#: views/admin-page.php:677
 msgid "Export Logs"
 msgstr ""
 
-#: views/admin-page.php:627
+#: views/admin-page.php:691
 msgid "Time"
 msgstr ""
 
-#: views/admin-page.php:628
+#: views/admin-page.php:692
 msgid "Level"
 msgstr ""
 
-#: views/admin-page.php:629
+#: views/admin-page.php:693
 msgid "Message"
 msgstr ""
 
-#: views/admin-page.php:622
+#: views/admin-page.php:686
 msgid "No logs available"
 msgstr ""
 
-#: views/admin-page.php:652
+#: views/admin-page.php:716
 msgid "How to Configure Cloudflare Integration"
 msgstr ""
 
-#: views/admin-page.php:654
+#: views/admin-page.php:718
 msgid "Getting Your API Token"
 msgstr ""
 
-#: views/admin-page.php:657, views/admin-page.php:707
+#: views/admin-page.php:721, views/admin-page.php:771
 msgid "Log in to your Cloudflare dashboard"
 msgstr ""
 
-#: views/admin-page.php:660
+#: views/admin-page.php:724
 msgid "Click on \"My Profile\" in the top right corner"
 msgstr ""
 
-#: views/admin-page.php:663
+#: views/admin-page.php:727
 msgid "Select \"API Tokens\" from the left menu"
 msgstr ""
 
-#: views/admin-page.php:670
+#: views/admin-page.php:734
 msgid "Click \"Create Token\""
 msgstr ""
 
-#: views/admin-page.php:673
+#: views/admin-page.php:737
 msgid "Use the \"Create Custom Token\" option"
 msgstr ""
 
-#: views/admin-page.php:679
+#: views/admin-page.php:743
 msgid "Set the following permissions:"
 msgstr ""
 
-#: views/admin-page.php:681
+#: views/admin-page.php:745
 msgid "Zone - Zone - Read"
 msgstr ""
 
-#: views/admin-page.php:682
+#: views/admin-page.php:746
 msgid "Zone - Zone WAF - Edit"
 msgstr ""
 
-#: views/admin-page.php:683
+#: views/admin-page.php:747
 msgid "Account - Filter Lists - Edit"
 msgstr ""
 
-#: views/admin-page.php:684
+#: views/admin-page.php:748
 msgid "Account - Filter Lists - Read"
 msgstr ""
 
-#: views/admin-page.php:688
+#: views/admin-page.php:752
 msgid "Set Zone Resources to \"All Zones\""
 msgstr ""
 
-#: views/admin-page.php:694
+#: views/admin-page.php:758
 msgid "Click \"Continue to Summary\" and then \"Create Token\""
 msgstr ""
 
-#: views/admin-page.php:696
+#: views/admin-page.php:760
 msgid "Copy the generated token and paste it in the field above"
 msgstr ""
 
-#: views/admin-page.php:704
+#: views/admin-page.php:768
 msgid "Finding Your Zone ID"
 msgstr ""
 
-#: views/admin-page.php:710
+#: views/admin-page.php:774
 msgid "Select your domain/website"
 msgstr ""
 
-#: views/admin-page.php:717
+#: views/admin-page.php:781
 msgid "Go to the \"Overview\" tab and scroll down to the \"API\" section"
 msgstr ""
 
-#: views/admin-page.php:723
+#: views/admin-page.php:787
 msgid "Your Zone ID will be displayed there"
 msgstr ""
 
-#: views/admin-page.php:726
+#: views/admin-page.php:790
 msgid "Setting Up Custom Rules"
 msgstr ""
 
-#: views/admin-page.php:734
+#: views/admin-page.php:798
 msgid "In your Cloudflare dashboard, go to Security > WAF > Custom Rules"
 msgstr ""
 
-#: views/admin-page.php:740
+#: views/admin-page.php:804
 msgid "Click \"Create Rule\""
 msgstr ""
 
-#: views/admin-page.php:741, views/admin-page.php:781
+#: views/admin-page.php:805, views/admin-page.php:845
 msgid "Configure the rule:"
 msgstr ""
 
-#: views/admin-page.php:743, views/admin-page.php:783
+#: views/admin-page.php:807, views/admin-page.php:847
 msgid "Rule name: \"Block Malicious IPs\""
 msgstr ""
 
-#: views/admin-page.php:745, views/admin-page.php:785
+#: views/admin-page.php:809, views/admin-page.php:849
 msgid "Click on Edit Expression, then paste the following expression: (ip.src in {})"
 msgstr ""
 
-#: views/admin-page.php:751, views/admin-page.php:791
+#: views/admin-page.php:815, views/admin-page.php:855
 msgid "Action: Block"
 msgstr ""
 
-#: views/admin-page.php:754, views/admin-page.php:794
+#: views/admin-page.php:818, views/admin-page.php:858
 msgid "Click on the \"Deploy\" button"
 msgstr ""
 
-#: views/admin-page.php:755, views/admin-page.php:795
+#: views/admin-page.php:819, views/admin-page.php:859
 msgid "After creating the rule:"
 msgstr ""
 
-#: views/admin-page.php:757, views/admin-page.php:797
+#: views/admin-page.php:821, views/admin-page.php:861
 msgid "The Ruleset ID and Rule ID are shown in the URL when editing the ruleset"
 msgstr ""
 
-#: views/admin-page.php:772
+#: views/admin-page.php:836
 msgid "In the new Cloudflare dashboard, go to Security > Security Rules"
 msgstr ""
 
-#: views/admin-page.php:779
+#: views/admin-page.php:843
 msgid "Click \"Create Rule\" and choose \"Custom Rule\""
 msgstr ""
 
-#: views/admin-page.php:807
+#: views/admin-page.php:871
 msgid "After creating the rule, note the new location for Ruleset ID and Rule ID"
 msgstr ""
 
-#: views/admin-page.php:812
+#: views/admin-page.php:876
 msgid "Note: Make sure to keep these IDs secure and never share them publicly."
 msgstr ""

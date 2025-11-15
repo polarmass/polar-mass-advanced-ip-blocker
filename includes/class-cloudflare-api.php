@@ -125,17 +125,198 @@ class Cloudflare_Api {
 	}
 
 	/**
+	 * Get current Cloudflare plan for the zone
+	 *
+	 * @return array|false Plan info with 'name' and 'legacy_id', or false on failure.
+	 */
+	private function get_current_plan() {
+		$zone_id = get_option( 'pmip_zone_id' );
+		if ( empty( $zone_id ) ) {
+			return false;
+		}
+
+		try {
+			$endpoint = "https://api.cloudflare.com/client/v4/zones/{$zone_id}/subscription";
+			$response = $this->make_request( 'GET', $endpoint );
+
+			if ( isset( $response['success'] ) && true === $response['success'] && isset( $response['result']['rate_plan'] ) ) {
+				$rate_plan = $response['result']['rate_plan'];
+				$legacy_id = isset( $rate_plan['id'] ) ? $rate_plan['id'] : 'free';
+				$public_name = isset( $rate_plan['public_name'] ) ? $rate_plan['public_name'] : 'Free Plan';
+				
+				return array(
+					'name'      => $public_name,
+					'legacy_id' => $legacy_id,
+				);
+			} else {
+				if ( isset( $response['errors'] ) && is_array( $response['errors'] ) ) {
+					$error_msg = isset( $response['errors'][0]['message'] ) ? $response['errors'][0]['message'] : 'Unknown error';
+					$this->logger->log( '[Cloudflare] Failed to get current plan - API error: ' . $error_msg, 'error' );
+				} else {
+					$this->logger->log( '[Cloudflare] Failed to get current plan - Invalid response structure', 'error' );
+				}
+			}
+		} catch ( \Exception $e ) {
+			$this->logger->log( '[Cloudflare] Failed to get current plan: ' . $e->getMessage(), 'error' );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get plan limits for IP lists and rules
+	 *
+	 * @param string $plan_name Plan name or legacy_id.
+	 * @return array Limits with 'max_lists', 'max_items', and 'max_rules'.
+	 */
+	private function get_plan_limits( $plan_name = null ) {
+		if ( empty( $plan_name ) ) {
+			$plan = $this->get_current_plan();
+			if ( false === $plan ) {
+				$plan_name = 'free';
+			} else {
+				$plan_name = ! empty( $plan['legacy_id'] ) ? $plan['legacy_id'] : strtolower( $plan['name'] );
+			}
+		}
+
+		$plan_name = strtolower( $plan_name );
+
+		$limits = array(
+			'max_lists' => 1,
+			'max_items' => 10000,
+			'max_rules' => 5,
+		);
+
+		if ( 'free' === $plan_name || false !== stripos( $plan_name, 'free' ) ) {
+			$limits = array(
+				'max_lists' => 1,
+				'max_items' => 10000,
+				'max_rules' => 5,
+			);
+		} elseif ( 'pro' === $plan_name || false !== stripos( $plan_name, 'pro' ) ) {
+			$limits = array(
+				'max_lists' => 10,
+				'max_items' => 10000,
+				'max_rules' => 20,
+			);
+		} elseif ( 'business' === $plan_name || false !== stripos( $plan_name, 'business' ) ) {
+			$limits = array(
+				'max_lists' => 10,
+				'max_items' => 10000,
+				'max_rules' => 100,
+			);
+		} elseif ( 'enterprise' === $plan_name || false !== stripos( $plan_name, 'enterprise' ) ) {
+			$limits = array(
+				'max_lists' => 1000,
+				'max_items' => 500000,
+				'max_rules' => 1000,
+			);
+		}
+
+		return $limits;
+	}
+
+	/**
+	 * Get current rule count in the ruleset
+	 *
+	 * @return int|false Number of rules or false on failure.
+	 */
+	public function get_rule_count() {
+		$zone_id    = get_option( 'pmip_zone_id' );
+		$ruleset_id = get_option( 'pmip_ruleset_id' );
+		
+		if ( empty( $zone_id ) || empty( $ruleset_id ) ) {
+			return false;
+		}
+
+		try {
+			$endpoint = "https://api.cloudflare.com/client/v4/zones/{$zone_id}/rulesets/{$ruleset_id}";
+			$response = $this->make_request( 'GET', $endpoint );
+
+			if ( isset( $response['success'] ) && true === $response['success'] && isset( $response['result']['rules'] ) && is_array( $response['result']['rules'] ) ) {
+				return count( $response['result']['rules'] );
+			}
+		} catch ( \Exception $e ) {
+			$this->logger->log( '[Cloudflare] Failed to get rule count: ' . $e->getMessage(), 'error' );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get plan info and limits (public method for admin display)
+	 *
+	 * @param bool $force_refresh Whether to bypass cache and fetch fresh data.
+	 * @return array|false Plan info with 'name', 'legacy_id', 'limits', and 'rule_count', or false on failure.
+	 */
+	public function get_plan_info( $force_refresh = false ) {
+		$cache_key = 'pmip_cloudflare_plan_info';
+		
+		if ( ! $force_refresh ) {
+			$cached = get_transient( $cache_key );
+			if ( false !== $cached ) {
+				return $cached;
+			}
+		}
+
+		$plan = $this->get_current_plan();
+		$rule_count = $this->get_rule_count();
+		
+		if ( false === $plan ) {
+			$limits = $this->get_plan_limits( 'free' );
+			$plan_info = array(
+				'name'       => 'Free Plan',
+				'legacy_id'  => 'free',
+				'limits'     => $limits,
+				'rule_count' => $rule_count !== false ? $rule_count : 0,
+				'fallback'   => true,
+			);
+		} else {
+			$limits = $this->get_plan_limits( ! empty( $plan['legacy_id'] ) ? $plan['legacy_id'] : $plan['name'] );
+			$plan_info = array(
+				'name'       => $plan['name'],
+				'legacy_id'  => $plan['legacy_id'],
+				'limits'     => $limits,
+				'rule_count' => $rule_count !== false ? $rule_count : 0,
+			);
+		}
+
+		set_transient( $cache_key, $plan_info, 15 * MINUTE_IN_SECONDS );
+
+		return $plan_info;
+	}
+
+	/**
+	 * Clear cached plan info and IP lists data
+	 */
+	public function clear_cache() {
+		delete_transient( 'pmip_cloudflare_plan_info' );
+		delete_transient( 'pmip_cloudflare_ip_lists' );
+	}
+
+	/**
 	 * Get all IP lists from Cloudflare
 	 *
+	 * @param bool $force_refresh Whether to bypass cache and fetch fresh data.
 	 * @return array Result array with lists and plugin list info.
 	 */
-	public function get_ip_lists() {
+	public function get_ip_lists( $force_refresh = false ) {
+		$cache_key = 'pmip_cloudflare_ip_lists';
+		
+		if ( ! $force_refresh ) {
+			$cached = get_transient( $cache_key );
+			if ( false !== $cached ) {
+				return $cached;
+			}
+		}
+
 		$account_id = $this->get_account_id();
 		if ( ! $account_id ) {
-			return array(
+			$result = array(
 				'success' => false,
 				'message' => __( 'Account ID not found. Please ensure zone is configured.', 'polar-mass-advanced-ip-blocker' ),
 			);
+			return $result;
 		}
 
 		try {
@@ -147,20 +328,33 @@ class Cloudflare_Api {
 				$plugin_list = null;
 				$list_name   = $this->get_list_name();
 
-				// Find list created by this plugin.
-				foreach ( $all_lists as $list ) {
-					if ( isset( $list['name'] ) && $list_name === $list['name'] && isset( $list['kind'] ) && 'ip' === $list['kind'] ) {
+				$ip_lists = array_filter( $all_lists, function( $list ) {
+					return isset( $list['kind'] ) && 'ip' === $list['kind'];
+				} );
+
+				foreach ( $ip_lists as $list ) {
+					if ( isset( $list['name'] ) && $list_name === $list['name'] ) {
 						$plugin_list = $list;
 						break;
 					}
 				}
 
-				return array(
-					'success'     => true,
-					'total_lists' => count( $all_lists ),
-					'plugin_list' => $plugin_list,
-					'all_lists'   => $all_lists,
+				$plan_limits = $this->get_plan_limits();
+				$total_ip_lists = count( $ip_lists );
+
+				$result = array(
+					'success'        => true,
+					'total_lists'    => count( $all_lists ),
+					'total_ip_lists' => $total_ip_lists,
+					'plugin_list'    => $plugin_list,
+					'all_lists'      => $all_lists,
+					'plan_limits'    => $plan_limits,
+					'at_limit'       => $total_ip_lists >= $plan_limits['max_lists'],
 				);
+
+				set_transient( $cache_key, $result, 15 * MINUTE_IN_SECONDS );
+
+				return $result;
 			}
 
 			return array(
@@ -190,6 +384,19 @@ class Cloudflare_Api {
 			);
 		}
 
+		$lists_data = $this->get_ip_lists();
+		if ( $lists_data['success'] && isset( $lists_data['at_limit'] ) && $lists_data['at_limit'] ) {
+			$plan_limits = isset( $lists_data['plan_limits'] ) ? $lists_data['plan_limits'] : array( 'max_lists' => 1 );
+			return array(
+				'success' => false,
+				'message' => sprintf(
+					/* translators: %d: Maximum number of IP lists allowed */
+					__( 'Cannot create IP list. You have reached the maximum number of IP lists (%d) allowed by your Cloudflare plan. Please upgrade your plan or delete an existing IP list.', 'polar-mass-advanced-ip-blocker' ),
+					$plan_limits['max_lists']
+				),
+			);
+		}
+
 		$list_name = $this->get_list_name();
 
 		try {
@@ -205,6 +412,7 @@ class Cloudflare_Api {
 			if ( isset( $response['success'] ) && true === $response['success'] && isset( $response['result']['id'] ) ) {
 				$list_id = $response['result']['id'];
 				update_option( 'pmip_ip_list_id', $list_id );
+				$this->clear_cache();
 				return array(
 					'success' => true,
 					'list_id' => $list_id,
@@ -240,10 +448,17 @@ class Cloudflare_Api {
 			return false;
 		}
 
+		$plan_limits = $this->get_plan_limits();
+		$ip_count = count( $ip_list );
+		
+		if ( $ip_count > $plan_limits['max_items'] ) {
+			$this->logger->log( '[Cloudflare] Cannot update IP list: ' . $ip_count . ' IPs exceeds plan limit of ' . $plan_limits['max_items'], 'error' );
+			return false;
+		}
+
 		try {
 			$endpoint = "https://api.cloudflare.com/client/v4/accounts/{$account_id}/rules/lists/{$list_id}/items";
 
-			// Prepare items array.
 			$items = array();
 			foreach ( $ip_list as $ip ) {
 				$items[] = array(
@@ -251,14 +466,17 @@ class Cloudflare_Api {
 				);
 			}
 
-			// Use PUT to replace all items.
 			$response = $this->make_request( 'PUT', $endpoint, $items );
 
 			if ( isset( $response['success'] ) && true === $response['success'] ) {
-				// Check operation status if operation_id is returned.
 				if ( isset( $response['result']['operation_id'] ) ) {
-					return $this->wait_for_bulk_operation( $account_id, $response['result']['operation_id'] );
+					$result = $this->wait_for_bulk_operation( $account_id, $response['result']['operation_id'] );
+					if ( $result ) {
+						$this->clear_cache();
+					}
+					return $result;
 				}
+				$this->clear_cache();
 				return true;
 			}
 
@@ -397,6 +615,11 @@ class Cloudflare_Api {
 				update_option( 'pmip_ip_list_id', $list_id );
 				$this->logger->log( '[Cloudflare] Found existing IP list: ' . $list_id, 'info' );
 			} else {
+				if ( isset( $lists_data['at_limit'] ) && $lists_data['at_limit'] ) {
+					$plan_limits = isset( $lists_data['plan_limits'] ) ? $lists_data['plan_limits'] : array( 'max_lists' => 1 );
+					$this->logger->log( '[Cloudflare] Cannot create IP list: reached limit of ' . $plan_limits['max_lists'] . ' lists for current plan', 'error' );
+					return false;
+				}
 				$create_result = $this->create_ip_list();
 				if ( ! $create_result['success'] ) {
 					$this->logger->log( '[Cloudflare] Failed to create IP list: ' . $create_result['message'], 'error' );

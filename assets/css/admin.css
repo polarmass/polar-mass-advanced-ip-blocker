@@ -777,3 +777,16 @@ body.pmip-modal-open {
     width: 120px;
   }
 }
+
+.dashicons.spin {
+  animation: pmip-spin 1s linear infinite;
+}
+
+@keyframes pmip-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

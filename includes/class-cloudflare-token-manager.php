@@ -67,7 +67,23 @@ class Cloudflare_Token_Manager {
 				}
 			}
 
-			$this->find_existing_polar_mass_token( $master_token );
+			$existing_token_id = $this->find_existing_polar_mass_token( $master_token );
+			if ( ! empty( $existing_token_id ) ) {
+				$stored_token = get_option( 'pmip_api_token', '' );
+				if ( ! empty( $stored_token ) ) {
+					$zones_test = $this->get_zones_list( $stored_token );
+					if ( ! empty( $zones_test['zones'] ) ) {
+						update_option( 'pmip_auto_connected', true );
+						return array(
+							'success' => true,
+							'message' => __( 'Successfully connected to Cloudflare using existing token for this domain! Please select a zone from the list below.', 'polar-mass-advanced-ip-blocker' ),
+							'zones'   => $zones_test['zones'],
+						);
+					}
+				}
+				$this->logger->log( '[Auto-Connect] Existing token found but stored token is invalid. Deleting old token and creating new one.', 'info' );
+				$this->delete_token_by_id( $master_token, $existing_token_id );
+			}
 
 			$permissions = $this->get_required_permissions( $master_token );
 
@@ -181,6 +197,7 @@ class Cloudflare_Token_Manager {
 			'Zone WAF Write',
 			'Account Rule Lists Read',
 			'Account Rule Lists Write',
+			'Billing Read',
 		);
 
 		try {
@@ -245,6 +262,7 @@ class Cloudflare_Token_Manager {
 	private function find_existing_polar_mass_token( $master_token ) {
 		try {
 			$endpoint = 'https://api.cloudflare.com/client/v4/user/tokens';
+			$token_name = $this->get_token_name();
 
 			$args = array(
 				'method'  => 'GET',
@@ -275,8 +293,11 @@ class Cloudflare_Token_Manager {
 
 			if ( isset( $data['result'] ) && is_array( $data['result'] ) ) {
 				foreach ( $data['result'] as $token ) {
-					if ( isset( $token['name'] ) && stripos( $token['name'], 'Polar Mass' ) !== false ) {
-						return '';
+					if ( isset( $token['name'] ) && $token['name'] === $token_name ) {
+						$this->logger->log( '[Auto-Connect] Found existing token for this domain: ' . $token_name, 'info' );
+						if ( isset( $token['id'] ) ) {
+							return $token['id'];
+						}
 					}
 				}
 			}
@@ -285,6 +306,111 @@ class Cloudflare_Token_Manager {
 		} catch ( \Exception $e ) {
 			$this->logger->log( '[Auto-Connect] Exception finding existing token: ' . $e->getMessage(), 'error' );
 			return '';
+		}
+	}
+
+	/**
+	 * Delete token by ID
+	 *
+	 * @param string $master_token Master token.
+	 * @param string $token_id Token ID to delete.
+	 * @return bool Success status.
+	 */
+	private function delete_token_by_id( $master_token, $token_id ) {
+		try {
+			$delete_endpoint = 'https://api.cloudflare.com/client/v4/user/tokens/' . $token_id;
+			
+			$delete_args = array(
+				'method'  => 'DELETE',
+				'headers' => array(
+					'Authorization' => 'Bearer ' . $master_token,
+					'Content-Type'  => 'application/json',
+				),
+				'timeout' => 30,
+			);
+
+			$delete_response = wp_remote_request( $delete_endpoint, $delete_args );
+
+			if ( is_wp_error( $delete_response ) ) {
+				$this->logger->log( '[Auto-Connect] Failed to delete token: ' . $delete_response->get_error_message(), 'error' );
+				return false;
+			}
+
+			$delete_status = wp_remote_retrieve_response_code( $delete_response );
+			if ( 200 === $delete_status || 404 === $delete_status ) {
+				$this->logger->log( '[Auto-Connect] Successfully deleted old token', 'info' );
+				return true;
+			} else {
+				$delete_body = wp_remote_retrieve_body( $delete_response );
+				$delete_data = json_decode( $delete_body, true );
+				$error_message = isset( $delete_data['errors'][0]['message'] ) ? $delete_data['errors'][0]['message'] : 'Unknown error';
+				$this->logger->log( '[Auto-Connect] Failed to delete token (HTTP ' . $delete_status . '): ' . $error_message, 'error' );
+				return false;
+			}
+		} catch ( \Exception $e ) {
+			$this->logger->log( '[Auto-Connect] Exception deleting token: ' . $e->getMessage(), 'error' );
+			return false;
+		}
+	}
+
+	/**
+	 * Delete scoped token from Cloudflare account
+	 *
+	 * @param string $master_token Master token.
+	 * @return bool Success status.
+	 */
+	public function delete_scoped_token( $master_token ) {
+		try {
+			$endpoint = 'https://api.cloudflare.com/client/v4/user/tokens';
+
+			$args = array(
+				'method'  => 'GET',
+				'headers' => array(
+					'Authorization' => 'Bearer ' . $master_token,
+					'Content-Type'  => 'application/json',
+				),
+				'timeout' => 30,
+			);
+
+			$response = wp_remote_request( $endpoint, $args );
+
+			if ( is_wp_error( $response ) ) {
+				$this->logger->log( '[Reset] Failed to get token list: ' . $response->get_error_message(), 'error' );
+				return false;
+			}
+
+			$body = wp_remote_retrieve_body( $response );
+			$data = json_decode( $body, true );
+
+			if ( json_last_error() !== JSON_ERROR_NONE ) {
+				$this->logger->log( '[Reset] Invalid JSON response when getting token list', 'error' );
+				return false;
+			}
+
+			$status_code = wp_remote_retrieve_response_code( $response );
+			if ( $status_code >= 400 ) {
+				$error_message = isset( $data['errors'][0]['message'] ) ? $data['errors'][0]['message'] : 'Unknown error';
+				$this->logger->log( '[Reset] API error getting token list: ' . $error_message, 'error' );
+				return false;
+			}
+
+			$token_name = $this->get_token_name();
+			
+			if ( isset( $data['result'] ) && is_array( $data['result'] ) ) {
+				foreach ( $data['result'] as $token ) {
+					if ( isset( $token['name'] ) && isset( $token['id'] ) && $token['name'] === $token_name ) {
+						if ( $this->delete_token_by_id( $master_token, $token['id'] ) ) {
+							$this->logger->log( '[Reset] Successfully deleted scoped token from Cloudflare', 'info' );
+							return true;
+						}
+					}
+				}
+			}
+
+			return true;
+		} catch ( \Exception $e ) {
+			$this->logger->log( '[Reset] Exception deleting scoped token: ' . $e->getMessage(), 'error' );
+			return false;
 		}
 	}
 
@@ -369,7 +495,7 @@ class Cloudflare_Token_Manager {
 	 */
 	private function generate_scoped_token( $master_token, $permissions ) {
 		try {
-			$token_name = 'Polar Mass IP Blocker - Zone Read & WAF Edit & IP Lists';
+			$token_name = $this->get_token_name();
 
 			$permission_groups = array();
 			foreach ( $permissions as $perm ) {
@@ -570,11 +696,11 @@ class Cloudflare_Token_Manager {
 	}
 
 	/**
-	 * Get unique ruleset name for this plugin
+	 * Get domain name for token/ruleset naming
 	 *
-	 * @return string Unique ruleset name.
+	 * @return string Sanitized domain name.
 	 */
-	private function get_ruleset_name() {
+	private function get_domain_name() {
 		$site_url = get_site_url();
 		$domain   = wp_parse_url( $site_url, PHP_URL_HOST );
 		if ( ! $domain ) {
@@ -582,7 +708,27 @@ class Cloudflare_Token_Manager {
 		}
 		$domain = strtolower( $domain );
 		$domain = preg_replace( '/[^a-z0-9_]/', '_', $domain );
-		return 'Polar Mass IP Blocker - ' . substr( $domain, 0, 30 );
+		return substr( $domain, 0, 30 );
+	}
+
+	/**
+	 * Get unique ruleset name for this plugin
+	 *
+	 * @return string Unique ruleset name.
+	 */
+	private function get_ruleset_name() {
+		$domain = $this->get_domain_name();
+		return 'Polar Mass IP Blocker - ' . $domain;
+	}
+
+	/**
+	 * Get unique token name for this plugin
+	 *
+	 * @return string Unique token name.
+	 */
+	private function get_token_name() {
+		$domain = $this->get_domain_name();
+		return 'Polar Mass IP Blocker (' . $domain . ') - Zone Read & WAF Edit & IP Lists & Billing Read';
 	}
 
 	/**

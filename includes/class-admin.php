@@ -53,6 +53,7 @@ class Admin {
 		add_action( 'wp_ajax_pmip_create_ip_list', array( $this, 'ajax_create_ip_list' ) );
 		add_action( 'wp_ajax_pmip_test_connection', array( $this, 'ajax_test_connection' ) );
 		add_action( 'wp_ajax_pmip_reset_cloudflare', array( $this, 'ajax_reset_cloudflare' ) );
+		add_action( 'wp_ajax_pmip_refresh_cloudflare_status', array( $this, 'ajax_refresh_cloudflare_status' ) );
 	}
 
 	/**
@@ -914,20 +915,62 @@ class Admin {
 			wp_send_json_error( array( 'message' => __( 'Unauthorized access.', 'polar-mass-advanced-ip-blocker' ) ) );
 		}
 
-		// Clear all Cloudflare-related options
+		$cloudflare_api = new Cloudflare_Api( $this->logger );
+		
+		$master_token = get_option( 'pmip_master_token', '' );
+		$scoped_token = get_option( 'pmip_api_token', '' );
+		
+		if ( ! empty( $master_token ) && ! empty( $scoped_token ) ) {
+			try {
+				$token_manager = new Cloudflare_Token_Manager( $this->logger );
+				$token_manager->delete_scoped_token( $master_token );
+			} catch ( \Exception $e ) {
+				$this->logger->log( '[Reset] Failed to delete scoped token from Cloudflare: ' . $e->getMessage(), 'error' );
+			}
+		}
+
 		delete_option( 'pmip_api_token' );
 		delete_option( 'pmip_zone_id' );
 		delete_option( 'pmip_ruleset_id' );
 		delete_option( 'pmip_rule_id' );
-		delete_option( 'pmip_master_token' );
+		// delete_option( 'pmip_master_token' );
 		delete_option( 'pmip_auto_connected' );
 		delete_option( 'pmip_account_id' );
 		delete_option( 'pmip_ip_list_id' );
+		delete_option( 'pmip_use_ip_list' );
+		
 		delete_transient( 'pmip_connection_status' );
+		delete_transient( 'pmip_cloudflare_plan_info' );
+		delete_transient( 'pmip_cloudflare_ip_lists' );
+		
+		$cloudflare_api->clear_cache();
 
 		wp_send_json_success(
 			array(
 				'message' => __( 'Cloudflare connection settings have been reset. You can now set up a new connection.', 'polar-mass-advanced-ip-blocker' ),
+			)
+		);
+	}
+
+	/**
+	 * AJAX handler to refresh Cloudflare status (plan info and IP lists)
+	 */
+	public function ajax_refresh_cloudflare_status() {
+		check_ajax_referer( 'pmip-admin-nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Unauthorized access.', 'polar-mass-advanced-ip-blocker' ) ) );
+		}
+
+		$cloudflare_api = new Cloudflare_Api( $this->logger );
+
+		$plan_info = $cloudflare_api->get_plan_info( true );
+		$ip_lists_data = $cloudflare_api->get_ip_lists( true );
+
+		wp_send_json_success(
+			array(
+				'plan_info'    => $plan_info,
+				'ip_lists_data' => $ip_lists_data,
 			)
 		);
 	}

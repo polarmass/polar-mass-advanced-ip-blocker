@@ -22,9 +22,12 @@ $zone_name           = '';
 $rule_details        = false;
 $connection_verified = false;
 $connection_state    = 'not_connected'; // not_connected, connected_verified, connected_unverified
+$plan_info           = false;
+$ip_lists_data       = false;
 
 if ( $is_configured && ! empty( $zone_id ) && ! empty( $ruleset_id ) && ! empty( $rule_id ) && ! empty( $scoped_token_stored ) ) {
 	$token_manager = new \Pm_Ip_Blocker\Cloudflare_Token_Manager( new \Pm_Ip_Blocker\Logger() );
+	$cloudflare_api = new \Pm_Ip_Blocker\Cloudflare_Api( new \Pm_Ip_Blocker\Logger() );
 
 	if ( ! empty( $zone_id ) && ! empty( $scoped_token_stored ) ) {
 		$zone_name = $token_manager->get_zone_name( $zone_id, $scoped_token_stored );
@@ -42,6 +45,11 @@ if ( $is_configured && ! empty( $zone_id ) && ! empty( $ruleset_id ) && ! empty(
 	}
 
 	$connection_state = $connection_verified ? 'connected_verified' : 'connected_unverified';
+
+	if ( $connection_verified ) {
+		$plan_info = $cloudflare_api->get_plan_info( false );
+		$ip_lists_data = $cloudflare_api->get_ip_lists( false );
+	}
 }
 ?>
 <div class="wrap">
@@ -82,10 +90,66 @@ if ( $is_configured && ! empty( $zone_id ) && ! empty( $ruleset_id ) && ! empty(
 									</span>
 								</p>
 							<?php endif; ?>
+							<?php if ( $plan_info && isset( $plan_info['name'] ) ) : ?>
+								<p id="pmip-plan-info">
+									<strong><?php esc_html_e( 'Plan:', 'polar-mass-advanced-ip-blocker' ); ?></strong>
+									<span class="pmip-plan-name"><?php echo esc_html( $plan_info['name'] ); ?></span>
+								</p>
+							<?php elseif ( 'connected_verified' === $connection_state ) : ?>
+								<p id="pmip-plan-info" style="display: none;">
+									<strong><?php esc_html_e( 'Plan:', 'polar-mass-advanced-ip-blocker' ); ?></strong>
+									<span class="pmip-plan-name"><?php esc_html_e( 'Loading...', 'polar-mass-advanced-ip-blocker' ); ?></span>
+								</p>
+							<?php endif; ?>
+							<?php if ( $plan_info && isset( $plan_info['limits']['max_rules'] ) ) : ?>
+								<p id="pmip-rules-info">
+									<strong><?php esc_html_e( 'Rules:', 'polar-mass-advanced-ip-blocker' ); ?></strong>
+									<span class="pmip-rules-count">
+										<?php
+										$rule_count = isset( $plan_info['rule_count'] ) ? $plan_info['rule_count'] : 0;
+										$max_rules  = $plan_info['limits']['max_rules'];
+										echo esc_html( $rule_count . ' / ' . $max_rules );
+										?>
+									</span>
+								</p>
+							<?php elseif ( 'connected_verified' === $connection_state ) : ?>
+								<p id="pmip-rules-info" style="display: none;">
+									<strong><?php esc_html_e( 'Rules:', 'polar-mass-advanced-ip-blocker' ); ?></strong>
+									<span class="pmip-rules-count"><?php esc_html_e( 'Loading...', 'polar-mass-advanced-ip-blocker' ); ?></span>
+								</p>
+							<?php endif; ?>
+							<?php if ( $ip_lists_data && isset( $ip_lists_data['plan_limits'] ) && isset( $ip_lists_data['total_ip_lists'] ) ) : ?>
+								<p id="pmip-ip-lists-info">
+									<strong><?php esc_html_e( 'IP Lists:', 'polar-mass-advanced-ip-blocker' ); ?></strong>
+									<span class="pmip-ip-lists-count">
+										<?php
+										$total_lists = $ip_lists_data['total_ip_lists'];
+										$max_lists   = $ip_lists_data['plan_limits']['max_lists'];
+										$max_items   = $ip_lists_data['plan_limits']['max_items'];
+										echo esc_html( $total_lists . ' / ' . $max_lists );
+										?>
+									</span>
+									<span class="pmip-muted-text">
+										(<?php
+										/* translators: %d: Maximum number of items allowed */
+										printf( esc_html__( 'max %d items', 'polar-mass-advanced-ip-blocker' ), $max_items );
+										?>)
+									</span>
+								</p>
+							<?php elseif ( 'connected_verified' === $connection_state ) : ?>
+								<p id="pmip-ip-lists-info" style="display: none;">
+									<strong><?php esc_html_e( 'IP Lists:', 'polar-mass-advanced-ip-blocker' ); ?></strong>
+									<span class="pmip-ip-lists-count"><?php esc_html_e( 'Loading...', 'polar-mass-advanced-ip-blocker' ); ?></span>
+								</p>
+							<?php endif; ?>
 						</div>
 						<p>
 							<button type="button" id="pmip-test-connection" class="button button-secondary">
 								<?php esc_html_e( 'Test Connection', 'polar-mass-advanced-ip-blocker' ); ?>
+							</button>
+							<button type="button" id="pmip-refresh-status" class="button button-secondary" style="margin-left: 10px;">
+								<span class="dashicons dashicons-update" style="vertical-align: middle;"></span>
+								<?php esc_html_e( 'Refresh Status', 'polar-mass-advanced-ip-blocker' ); ?>
 							</button>
 							<button type="button" id="pmip-reset-cloudflare" class="button button-link-delete" style="margin-left: 10px;">
 								<?php esc_html_e( 'Reset Settings', 'polar-mass-advanced-ip-blocker' ); ?>

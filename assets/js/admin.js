@@ -308,6 +308,98 @@ jQuery(document).ready(function ($) {
   });
 
   // Reset Cloudflare Settings button
+  function loadCloudflareStatus(showLoading) {
+    const $planInfo = $("#pmip-plan-info");
+    const $rulesInfo = $("#pmip-rules-info");
+    const $ipListsInfo = $("#pmip-ip-lists-info");
+
+    if (showLoading) {
+      if ($planInfo.length) {
+        $planInfo.show().find(".pmip-plan-name").text("Loading...");
+      }
+      if ($rulesInfo.length) {
+        $rulesInfo.show().find(".pmip-rules-count").text("Loading...");
+      }
+      if ($ipListsInfo.length) {
+        $ipListsInfo.show().find(".pmip-ip-lists-count").text("Loading...");
+      }
+    }
+
+    $.ajax({
+      url: pmipAdmin.ajaxUrl,
+      type: "POST",
+      data: {
+        action: "pmip_refresh_cloudflare_status",
+        nonce: pmipAdmin.nonce,
+      },
+      success: function (response) {
+        if (response.success && response.data) {
+          if (response.data.plan_info) {
+            const planInfo = response.data.plan_info;
+            if ($planInfo.length) {
+              $planInfo.show().find(".pmip-plan-name").text(planInfo.name || "Unknown");
+            }
+            if ($rulesInfo.length && planInfo.limits && planInfo.limits.max_rules) {
+              const ruleCount = planInfo.rule_count || 0;
+              const maxRules = planInfo.limits.max_rules;
+              $rulesInfo.show().find(".pmip-rules-count").text(ruleCount + " / " + maxRules);
+            }
+          }
+
+          if (response.data.ip_lists_data && response.data.ip_lists_data.success) {
+            const ipListsData = response.data.ip_lists_data;
+            if ($ipListsInfo.length && ipListsData.plan_limits) {
+              const totalLists = ipListsData.total_ip_lists || 0;
+              const maxLists = ipListsData.plan_limits.max_lists || 0;
+              const maxItems = ipListsData.plan_limits.max_items || 0;
+              $ipListsInfo
+                .show()
+                .find(".pmip-ip-lists-count")
+                .text(totalLists + " / " + maxLists);
+              const $maxItemsSpan = $ipListsInfo.find(".pmip-muted-text");
+              if ($maxItemsSpan.length) {
+                $maxItemsSpan.text("(max " + maxItems + " items)");
+              } else {
+                $ipListsInfo.append(
+                  '<span class="pmip-muted-text"> (max ' + maxItems + " items)</span>"
+                );
+              }
+            }
+          }
+        }
+      },
+      error: function () {
+        if ($planInfo.length) {
+          $planInfo.show().find(".pmip-plan-name").text("Error loading");
+        }
+        if ($rulesInfo.length) {
+          $rulesInfo.show().find(".pmip-rules-count").text("Error loading");
+        }
+        if ($ipListsInfo.length) {
+          $ipListsInfo.show().find(".pmip-ip-lists-count").text("Error loading");
+        }
+      },
+    });
+  }
+
+  if ($("#pmip-plan-info").length || $("#pmip-rules-info").length || $("#pmip-ip-lists-info").length) {
+    loadCloudflareStatus(false);
+  }
+
+  $("#pmip-refresh-status").on("click", function () {
+    const $button = $(this);
+    const $icon = $button.find(".dashicons");
+    $button.prop("disabled", true);
+    $icon.addClass("spin");
+
+    loadCloudflareStatus(true);
+
+    setTimeout(function () {
+      $button.prop("disabled", false);
+      $icon.removeClass("spin");
+    }, 1000);
+  });
+
   $("#pmip-reset-cloudflare").on("click", function () {
     if (
       !confirm(
