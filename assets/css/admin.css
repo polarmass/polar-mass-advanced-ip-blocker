@@ -441,6 +441,56 @@ body.pmip-modal-open {
   display: block;
 }
 
+/* Toggle Switch CSS */
+.pmip-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.pmip-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.pmip-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 24px;
+}
+
+.pmip-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+.pmip-switch input:checked + .pmip-slider {
+  background-color: #2271b1;
+}
+
+.pmip-switch input:focus + .pmip-slider {
+  box-shadow: 0 0 1px #2271b1;
+}
+
+.pmip-switch input:checked + .pmip-slider:before {
+  transform: translateX(26px);
+}
+
 /* Lightbox CSS */
 .pmip-lightbox-overlay {
   display: none;
@@ -471,4 +521,259 @@ body.pmip-modal-open {
   font-size: 2rem;
   cursor: pointer;
   z-index: 100000;
+}
+
+/* Cloudflare Setup & Status Card Styles */
+.pmip-cloudflare-setup-card {
+  margin-bottom: 20px;
+}
+
+.pmip-connection-status-banner {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-left: 4px solid #2271b1;
+  border-radius: 4px;
+}
+
+.pmip-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.pmip-status-badge .dashicons {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.pmip-status-connected {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.pmip-status-warning {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.pmip-status-not-connected {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.pmip-connection-summary {
+  margin: 10px 0;
+}
+
+.pmip-connection-summary p {
+  margin: 5px 0;
+}
+
+.pmip-rule-status-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pmip-rule-enabled {
+  background: #d4edda;
+  color: #155724;
+}
+
+.pmip-rule-disabled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.pmip-toggle-link {
+  margin-left: 10px;
+  text-decoration: none;
+  color: #2271b1;
+}
+
+.pmip-toggle-link:hover {
+  text-decoration: underline;
+}
+
+.pmip-connection-details {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #ddd;
+}
+
+.pmip-connection-details-box {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 15px;
+}
+
+.pmip-connection-details-box h4 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.pmip-details-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pmip-details-table td {
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.pmip-details-table td:first-child {
+  width: 150px;
+  font-weight: 600;
+}
+
+.pmip-muted-text {
+  color: #646970;
+  font-size: 12px;
+}
+
+.pmip-error-text {
+  color: #d63638;
+}
+
+/* Setup Flow Styles */
+.pmip-setup-flow {
+  margin-top: 20px;
+}
+
+.pmip-setup-intro {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #e7f3ff;
+  border-left: 4px solid #2271b1;
+  border-radius: 4px;
+}
+
+.pmip-setup-step {
+  margin-bottom: 25px;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.pmip-step-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.pmip-step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: #2271b1;
+  color: #fff;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.pmip-step-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.pmip-step-description {
+  color: #646970;
+  margin-bottom: 15px;
+}
+
+.pmip-token-input-section {
+  margin-top: 15px;
+}
+
+.pmip-token-input {
+  max-width: 500px;
+}
+
+.pmip-status-inline {
+  margin-left: 10px;
+  display: inline-block;
+}
+
+/* Manual Config Section */
+.pmip-manual-config-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+}
+
+.pmip-manual-config-section .pmip-toggle-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+  color: #646970;
+}
+
+.pmip-manual-config-section .pmip-toggle-link:hover {
+  color: #2271b1;
+}
+
+.pmip-manual-config-section .dashicons {
+  transition: transform 0.3s ease;
+}
+
+.pmip-manual-config-section.open .dashicons {
+  transform: rotate(180deg);
+}
+
+/* IP List Card Styles */
+.pmip-ip-list-card.pmip-disabled-section {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.pmip-ip-list-card.pmip-disabled-section input,
+.pmip-ip-list-card.pmip-disabled-section select,
+.pmip-ip-list-card.pmip-disabled-section button {
+  cursor: not-allowed;
+}
+
+/* Inline Notice Styles */
+.notice.inline {
+  margin: 10px 0;
+  padding: 12px;
+}
+
+/* Responsive adjustments for new components */
+@media (max-width: 768px) {
+  .pmip-step-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pmip-connection-summary {
+    font-size: 14px;
+  }
+
+  .pmip-details-table {
+    font-size: 13px;
+  }
+
+  .pmip-details-table td:first-child {
+    width: 120px;
+  }
 }

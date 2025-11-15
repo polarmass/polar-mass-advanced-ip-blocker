@@ -200,23 +200,148 @@ jQuery(document).ready(function ($) {
     });
   });
 
-  // Tab switching
-  $(".pmip-tab-header").on("click", function () {
-    const targetTab = $(this).data("tab");
+  // Toggle token visibility
+  $("#pmip-toggle-token-visibility").on("click", function () {
+    const $input = $("#pmip_master_token");
+    const $icon = $(this).find(".dashicons");
+    if ($input.attr("type") === "password") {
+      $input.attr("type", "text");
+      $icon.removeClass("dashicons-visibility").addClass("dashicons-hidden");
+    } else {
+      $input.attr("type", "password");
+      $icon.removeClass("dashicons-hidden").addClass("dashicons-visibility");
+    }
+  });
 
-    // Update tab headers
-    $(".pmip-tab-header").removeClass("active").css({
-      "border-bottom-color": "transparent",
-      color: "#646970",
-    });
-    $(this).addClass("active").css({
-      "border-bottom-color": "#2271b1",
-      color: "#2271b1",
-    });
+  // Toggle connection details
+  $("#pmip-view-details-toggle").on("click", function (e) {
+    e.preventDefault();
+    const $details = $("#pmip-connection-details");
+    const $link = $(this);
+    if ($details.is(":visible")) {
+      $details.slideUp();
+      $link.text($link.data("show-text") || "View Details");
+    } else {
+      $details.slideDown();
+      $link.text($link.data("hide-text") || "Hide Details");
+    }
+  });
 
-    // Update tab content
-    $(".pmip-tab-content").hide();
-    $("#pmip-tab-" + targetTab).show();
+  // Toggle advanced/manual config
+  $("#pmip-advanced-config-toggle").on("click", function (e) {
+    e.preventDefault();
+    const $section = $(".pmip-manual-config-section");
+    const $config = $("#pmip-manual-config");
+    const $link = $(this);
+    if ($config.is(":visible")) {
+      $config.slideUp();
+      $section.removeClass("open");
+    } else {
+      $config.slideDown();
+      $section.addClass("open");
+    }
+  });
+
+  // Zone select change handler - enable/disable button
+  $("#pmip_zone_select").on("change", function () {
+    const $button = $("#pmip-select-zone-btn");
+    if ($(this).val()) {
+      $button.prop("disabled", false);
+    } else {
+      $button.prop("disabled", true);
+    }
+  });
+
+  // Test Connection button
+  $("#pmip-test-connection").on("click", function () {
+    const $button = $(this);
+    const originalText = $button.text();
+    $button.prop("disabled", true).text("Testing...");
+
+    $.ajax({
+      url: pmipAdmin.ajaxUrl,
+      type: "POST",
+      data: {
+        action: "pmip_test_connection",
+        nonce: pmipAdmin.nonce,
+      },
+      success: function (response) {
+        if (response.success) {
+          alert(response.data.message || "Connection test successful!");
+          location.reload();
+        } else {
+          alert(response.data.message || "Connection test failed. Please check your configuration.");
+        }
+      },
+      error: function () {
+        alert("Error testing connection. Please try again.");
+      },
+      complete: function () {
+        $button.prop("disabled", false).text(originalText);
+      },
+    });
+  });
+
+  // Reconnect button - scrolls to setup flow (which should be visible for unverified connections)
+  $("#pmip-reconnect-btn").on("click", function () {
+    // Scroll to the setup flow section
+    const $setupFlow = $(".pmip-setup-flow");
+    if ($setupFlow.length && $setupFlow.is(":visible")) {
+      $("html, body").animate(
+        {
+          scrollTop: $setupFlow.offset().top - 50,
+        },
+        500
+      );
+    } else {
+      // If setup flow is hidden, show advanced config and scroll there
+      $("#pmip-advanced-config-toggle").trigger("click");
+      setTimeout(function () {
+        $("html, body").animate(
+          {
+            scrollTop: $(".pmip-cloudflare-setup-card").offset().top - 50,
+          },
+          500
+        );
+      }, 300);
+    }
+  });
+
+  // Reset Cloudflare Settings button
+  $("#pmip-reset-cloudflare").on("click", function () {
+    if (
+      !confirm(
+        "Are you sure you want to reset all Cloudflare connection settings? This will clear your API token, zone ID, ruleset ID, and rule ID. You will need to reconnect."
+      )
+    ) {
+      return;
+    }
+
+    const $button = $(this);
+    const originalText = $button.text();
+    $button.prop("disabled", true).text("Resetting...");
+
+    $.ajax({
+      url: pmipAdmin.ajaxUrl,
+      type: "POST",
+      data: {
+        action: "pmip_reset_cloudflare",
+        nonce: pmipAdmin.nonce,
+      },
+      success: function (response) {
+        if (response.success) {
+          alert(response.data.message || "Settings reset successfully!");
+          location.reload();
+        } else {
+          alert(response.data.message || "Failed to reset settings. Please try again.");
+          $button.prop("disabled", false).text(originalText);
+        }
+      },
+      error: function () {
+        alert("Error resetting settings. Please try again.");
+        $button.prop("disabled", false).text(originalText);
+      },
+    });
   });
 
   // Auto-connect to Cloudflare
@@ -254,7 +379,7 @@ jQuery(document).ready(function ($) {
         if (response.success) {
           $status.html('<span style="color: green;">✓ Connected!</span>');
           $message.html(
-            '<div class="notice notice-success"><p><strong>Success!</strong> ' +
+            '<div class="notice notice-success inline"><p><strong>Success!</strong> ' +
               response.data.message +
               "</p></div>"
           );
@@ -275,12 +400,15 @@ jQuery(document).ready(function ($) {
                   ")</option>"
               );
             });
-            $zoneSelection.show();
+            // Show step 2
+            $("#pmip-step-2").slideDown();
+            // Disable zone select button initially
+            $("#pmip-select-zone-btn").prop("disabled", true);
           }
         } else {
           $status.html("");
           $message.html(
-            '<div class="notice notice-error"><p><strong>Error:</strong> ' +
+            '<div class="notice notice-error inline"><p><strong>Error:</strong> ' +
               (response.data.message || pmipAdmin.i18n.error) +
               "</p></div>"
           );
@@ -305,6 +433,7 @@ jQuery(document).ready(function ($) {
     const $button = $(this);
     const $status = $("#pmip-zone-selection-status");
     const $message = $("#pmip-zone-selection-message");
+    const $zoneSelect = $("#pmip_zone_select");
 
     if (!zoneId) {
       $message.html(
@@ -314,6 +443,7 @@ jQuery(document).ready(function ($) {
     }
 
     $button.prop("disabled", true);
+    $zoneSelect.prop("disabled", true);
     $status.html(
       '<span class="spinner is-active" style="float: none; margin: 0;"></span> Creating rule...'
     );
@@ -331,7 +461,7 @@ jQuery(document).ready(function ($) {
         if (response.success) {
           $status.html('<span style="color: green;">✓ Rule Created!</span>');
           $message.html(
-            '<div class="notice notice-success"><p><strong>Success!</strong> ' +
+            '<div class="notice notice-success inline"><p><strong>Success!</strong> ' +
               response.data.message +
               "</p></div>"
           );
@@ -341,21 +471,23 @@ jQuery(document).ready(function ($) {
         } else {
           $status.html("");
           $message.html(
-            '<div class="notice notice-error"><p><strong>Error:</strong> ' +
+            '<div class="notice notice-error inline"><p><strong>Error:</strong> ' +
               (response.data.message || pmipAdmin.i18n.error) +
               "</p></div>"
           );
           $button.prop("disabled", false);
+          $zoneSelect.prop("disabled", false);
         }
       },
       error: function () {
         $status.html("");
         $message.html(
-          '<div class="notice notice-error"><p><strong>Error:</strong> ' +
+          '<div class="notice notice-error inline"><p><strong>Error:</strong> ' +
             pmipAdmin.i18n.error +
             "</p></div>"
         );
         $button.prop("disabled", false);
+        $zoneSelect.prop("disabled", false);
       },
     });
   });
@@ -481,4 +613,142 @@ jQuery(document).ready(function ($) {
       overlay.querySelector("img").src = "";
     }
   };
+
+  // IP List Management
+  const $useIpList = $("#pmip_use_ip_list");
+  const $ipListInfo = $("#pmip-ip-list-info");
+  const $listsInfo = $("#pmip-lists-info");
+  const $refreshLists = $("#pmip-refresh-lists");
+  const $createList = $("#pmip-create-list");
+
+  // Toggle IP list info visibility
+  function toggleIpListInfo() {
+    if ($useIpList.is(":checked")) {
+      $ipListInfo.show();
+      loadIpLists();
+    } else {
+      $ipListInfo.hide();
+    }
+  }
+
+  // Load IP lists information
+  function loadIpLists() {
+    $listsInfo.html(
+      '<p class="description"><span class="spinner is-active" style="float: none; margin: 0 10px 0 0;"></span>Loading IP lists information...</p>'
+    );
+
+    $.ajax({
+      url: pmipAdmin.ajaxUrl,
+      type: "POST",
+      data: {
+        action: "pmip_get_ip_lists",
+        nonce: pmipAdmin.nonce,
+      },
+      success: function (response) {
+        if (response.success && response.data) {
+          displayListsInfo(response.data);
+        } else {
+          $listsInfo.html(
+            '<p class="description" style="color: #d63638;">' +
+              (response.data?.message || "Failed to load IP lists") +
+              "</p>"
+          );
+        }
+      },
+      error: function () {
+        $listsInfo.html(
+          '<p class="description" style="color: #d63638;">Error loading IP lists. Please try again.</p>'
+        );
+      },
+    });
+  }
+
+  // Display lists information
+  function displayListsInfo(data) {
+    let html = "";
+    const totalLists = data.total_lists || 0;
+    const pluginList = data.plugin_list;
+
+    html +=
+      '<p class="description"><strong>Total IP Lists:</strong> ' +
+      totalLists +
+      "</p>";
+
+    if (pluginList) {
+      html +=
+        '<div style="margin-top: 10px; padding: 10px; background: #f0f6fc; border-left: 4px solid #2271b1; border-radius: 4px;">';
+      html +=
+        '<p><strong>Plugin IP List Found:</strong> ' + pluginList.name + "</p>";
+      html +=
+        '<p><strong>Items:</strong> ' +
+        (pluginList.num_items || 0) +
+        "</p>";
+      html +=
+        '<p><strong>Referenced by:</strong> ' +
+        (pluginList.num_referencing_filters || 0) +
+        " filter(s)</p>";
+      if (pluginList.description) {
+        html +=
+          '<p><strong>Description:</strong> ' +
+          pluginList.description +
+          "</p>";
+      }
+      html += "</div>";
+      $createList.hide();
+    } else {
+      html +=
+        '<div style="margin-top: 10px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffb900; border-radius: 4px;">';
+      html +=
+        '<p><strong>No IP list found for this plugin.</strong> Click "Create IP List" to create one.</p>';
+      html += "</div>";
+      $createList.show();
+    }
+
+    $listsInfo.html(html);
+  }
+
+  // Toggle change handler
+  $useIpList.on("change", function () {
+    toggleIpListInfo();
+  });
+
+  // Initial load
+  if ($useIpList.is(":checked")) {
+    toggleIpListInfo();
+  }
+
+  // Refresh lists button
+  $refreshLists.on("click", function () {
+    loadIpLists();
+  });
+
+  // Create list button
+  $createList.on("click", function () {
+    const $button = $(this);
+    $button.prop("disabled", true).text("Creating...");
+
+    $.ajax({
+      url: pmipAdmin.ajaxUrl,
+      type: "POST",
+      data: {
+        action: "pmip_create_ip_list",
+        nonce: pmipAdmin.nonce,
+      },
+      success: function (response) {
+        if (response.success) {
+          alert(response.data.message || "IP list created successfully!");
+          loadIpLists();
+        } else {
+          alert(
+            response.data?.message || "Failed to create IP list. Please try again."
+          );
+          $button.prop("disabled", false).text("Create IP List");
+        }
+      },
+      error: function () {
+        alert("Error creating IP list. Please try again.");
+        $button.prop("disabled", false).text("Create IP List");
+      },
+    });
+  });
 });

@@ -111,6 +111,7 @@ class Cloudflare_Token_Manager {
 			$this->logger->log( '[Auto-Connect] Error: ' . $e->getMessage(), 'error' );
 			return array(
 				'success' => false,
+				/* translators: %s: Error message */
 				'message' => sprintf( __( 'Auto-connect failed: %s', 'polar-mass-advanced-ip-blocker' ), $e->getMessage() ),
 			);
 		}
@@ -178,6 +179,8 @@ class Cloudflare_Token_Manager {
 		$required_permission_names = array(
 			'Zone Read',
 			'Zone WAF Write',
+			'Account Rule Lists Read',
+			'Account Rule Lists Write',
 		);
 
 		try {
@@ -366,7 +369,7 @@ class Cloudflare_Token_Manager {
 	 */
 	private function generate_scoped_token( $master_token, $permissions ) {
 		try {
-			$token_name = 'Polar Mass IP Blocker - Zone Read & WAF Edit';
+			$token_name = 'Polar Mass IP Blocker - Zone Read & WAF Edit & IP Lists';
 
 			$permission_groups = array();
 			foreach ( $permissions as $perm ) {
@@ -499,7 +502,7 @@ class Cloudflare_Token_Manager {
 	 */
 	public function get_rule_details( $zone_id, $ruleset_id, $rule_id, $token ) {
 		try {
-			$endpoint = "https://api.cloudflare.com/client/v4/zones/{$zone_id}/rulesets/{$ruleset_id}/rules/{$rule_id}";
+			$ruleset_endpoint = "https://api.cloudflare.com/client/v4/zones/{$zone_id}/rulesets/{$ruleset_id}";
 
 			$args = array(
 				'method'  => 'GET',
@@ -510,14 +513,19 @@ class Cloudflare_Token_Manager {
 				'timeout' => 30,
 			);
 
-			$response = wp_remote_request( $endpoint, $args );
+			$response = wp_remote_request( $ruleset_endpoint, $args );
 
 			if ( is_wp_error( $response ) ) {
+				$this->logger->log( '[Cloudflare] Error getting ruleset: ' . $response->get_error_message(), 'error' );
 				return false;
 			}
 
 			$status_code = wp_remote_retrieve_response_code( $response );
 			if ( $status_code >= 400 ) {
+				$body = wp_remote_retrieve_body( $response );
+				$data = json_decode( $body, true );
+				$error_msg = isset( $data['errors'][0]['message'] ) ? $data['errors'][0]['message'] : 'HTTP ' . $status_code;
+				$this->logger->log( '[Cloudflare] Failed to get ruleset (HTTP ' . $status_code . '): ' . $error_msg, 'error' );
 				return false;
 			}
 
@@ -525,16 +533,150 @@ class Cloudflare_Token_Manager {
 			$data = json_decode( $body, true );
 
 			if ( json_last_error() !== JSON_ERROR_NONE || ! isset( $data['result'] ) ) {
+				$this->logger->log( '[Cloudflare] Invalid response when getting ruleset', 'error' );
 				return false;
 			}
 
-			$result = $data['result'];
-			return array(
-				'description' => isset( $result['description'] ) ? $result['description'] : '',
-				'enabled'     => isset( $result['enabled'] ) ? $result['enabled'] : false,
-				'action'      => isset( $result['action'] ) ? $result['action'] : '',
-			);
+			$ruleset = $data['result'];
+
+			if ( ! isset( $ruleset['rules'] ) || ! is_array( $ruleset['rules'] ) ) {
+				$this->logger->log( '[Cloudflare] Ruleset has no rules array', 'error' );
+				return false;
+			}
+
+			foreach ( $ruleset['rules'] as $rule ) {
+				if ( isset( $rule['id'] ) && $rule['id'] === $rule_id ) {
+					return array(
+						'description' => isset( $rule['description'] ) ? $rule['description'] : '',
+						'enabled'     => isset( $rule['enabled'] ) ? $rule['enabled'] : false,
+						'action'      => isset( $rule['action'] ) ? $rule['action'] : '',
+					);
+				}
+			}
+
+			$available_ids = array();
+			foreach ( $ruleset['rules'] as $rule ) {
+				if ( isset( $rule['id'] ) ) {
+					$available_ids[] = $rule['id'];
+				}
+			}
+			$this->logger->log( '[Cloudflare] Rule ID ' . $rule_id . ' not found in ruleset ' . $ruleset_id . '. Available rule IDs: ' . ( ! empty( $available_ids ) ? implode( ', ', $available_ids ) : 'none' ), 'error' );
+			return false;
+
 		} catch ( \Exception $e ) {
+			$this->logger->log( '[Cloudflare] Exception getting rule details: ' . $e->getMessage(), 'error' );
+			return false;
+		}
+	}
+
+	/**
+	 * Get unique ruleset name for this plugin
+	 *
+	 * @return string Unique ruleset name.
+	 */
+	private function get_ruleset_name() {
+		$site_url = get_site_url();
+		$domain   = wp_parse_url( $site_url, PHP_URL_HOST );
+		if ( ! $domain ) {
+			$domain = 'default';
+		}
+		$domain = strtolower( $domain );
+		$domain = preg_replace( '/[^a-z0-9_]/', '_', $domain );
+		return 'Polar Mass IP Blocker - ' . substr( $domain, 0, 30 );
+	}
+
+	/**
+	 * Get unique rule description for this plugin
+	 *
+	 * @return string Unique rule description.
+	 */
+	private function get_rule_description() {
+		$site_url = get_site_url();
+		$domain   = wp_parse_url( $site_url, PHP_URL_HOST );
+		if ( ! $domain ) {
+			$domain = 'default';
+		}
+		$domain = strtolower( $domain );
+		$domain = preg_replace( '/[^a-z0-9.-]/', '_', $domain );
+		return 'MaliciousIPs - Polar Mass Advanced IP Blocker (' . substr( $domain, 0, 40 ) . ')';
+	}
+
+	/**
+	 * Find existing ruleset for this plugin
+	 *
+	 * @param string $zone_id Zone ID.
+	 * @param string $token API token.
+	 * @return array|false Array with 'ruleset_id' and 'rule_id', or false if not found.
+	 */
+	private function find_existing_ruleset( $zone_id, $token ) {
+		try {
+			$ruleset_endpoint = "https://api.cloudflare.com/client/v4/zones/{$zone_id}/rulesets";
+			$ruleset_name     = $this->get_ruleset_name();
+
+			$args = array(
+				'method'  => 'GET',
+				'headers' => array(
+					'Authorization' => 'Bearer ' . $token,
+					'Content-Type'  => 'application/json',
+				),
+				'timeout' => 30,
+			);
+
+			$response = wp_remote_request( $ruleset_endpoint, $args );
+
+			if ( is_wp_error( $response ) ) {
+				return false;
+			}
+
+			$body        = wp_remote_retrieve_body( $response );
+			$data        = json_decode( $body, true );
+			$status_code = wp_remote_retrieve_response_code( $response );
+
+			if ( 200 !== $status_code || ! isset( $data['result'] ) ) {
+				return false;
+			}
+
+			$old_ruleset_name = 'Polar Mass IP Blocker';
+			foreach ( $data['result'] as $ruleset ) {
+				if ( isset( $ruleset['name'] ) && 
+					 ( $ruleset['name'] === $ruleset_name || $ruleset['name'] === $old_ruleset_name ) &&
+					 isset( $ruleset['phase'] ) && 
+					 $ruleset['phase'] === 'http_request_firewall_custom' &&
+					 isset( $ruleset['id'] ) ) {
+					
+					$ruleset_id = $ruleset['id'];
+					$rules_endpoint = "https://api.cloudflare.com/client/v4/zones/{$zone_id}/rulesets/{$ruleset_id}";
+					$rules_response = wp_remote_request( $rules_endpoint, $args );
+					
+					if ( ! is_wp_error( $rules_response ) ) {
+						$rules_body = wp_remote_retrieve_body( $rules_response );
+						$rules_data  = json_decode( $rules_body, true );
+						
+						if ( isset( $rules_data['result']['rules'] ) && is_array( $rules_data['result']['rules'] ) ) {
+							$rule_description = $this->get_rule_description();
+							$old_rule_description = 'MaliciousIPs - Polar Mass Advanced IP Blocker';
+							
+							foreach ( $rules_data['result']['rules'] as $rule ) {
+								if ( isset( $rule['id'] ) && isset( $rule['description'] ) ) {
+									if ( $rule['description'] === $rule_description || 
+										 $rule['description'] === $old_rule_description ||
+										 ( stripos( $rule['description'], 'MaliciousIPs' ) !== false &&
+										   stripos( $rule['description'], 'Polar Mass' ) !== false ) ) {
+										return array(
+											'ruleset_id' => $ruleset_id,
+											'rule_id'    => $rule['id'],
+										);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			return false;
+		} catch ( \Exception $e ) {
+			$this->logger->log( '[Auto-Connect] Error finding existing ruleset: ' . $e->getMessage(), 'error' );
 			return false;
 		}
 	}
@@ -548,6 +690,12 @@ class Cloudflare_Token_Manager {
 	 */
 	private function auto_create_rule( $zone_id, $token ) {
 		try {
+			$existing = $this->find_existing_ruleset( $zone_id, $token );
+			if ( false !== $existing ) {
+				$this->logger->log( '[Auto-Connect] Found existing ruleset: ' . $existing['ruleset_id'] . ' with rule: ' . $existing['rule_id'], 'info' );
+				return $existing;
+			}
+
 			$entrypoint_endpoint = "https://api.cloudflare.com/client/v4/zones/{$zone_id}/rulesets/phases/http_request_firewall_custom/entrypoint";
 
 			$args = array(
@@ -574,15 +722,17 @@ class Cloudflare_Token_Manager {
 
 			if ( ! $ruleset_id ) {
 				$ruleset_endpoint = "https://api.cloudflare.com/client/v4/zones/{$zone_id}/rulesets";
+				$ruleset_name     = $this->get_ruleset_name();
 
+				$rule_description = $this->get_rule_description();
 				$ruleset_data = array(
-					'name'        => 'Polar Mass IP Blocker',
+					'name'        => $ruleset_name,
 					'description' => 'Custom ruleset for Polar Mass Advanced IP Blocker',
 					'kind'        => 'zone',
 					'phase'       => 'http_request_firewall_custom',
 					'rules'       => array(
 						array(
-							'description' => 'MaliciousIPs - Polar Mass Advanced IP Blocker',
+							'description' => $rule_description,
 							'expression'  => '(ip.src in {})',
 							'action'      => 'block',
 							'enabled'     => true,
@@ -657,10 +807,39 @@ class Cloudflare_Token_Manager {
 				}
 				return false;
 			} else {
+				$rules_endpoint = "https://api.cloudflare.com/client/v4/zones/{$zone_id}/rulesets/{$ruleset_id}";
+				$rules_response  = wp_remote_request( $rules_endpoint, $args );
+
+				if ( ! is_wp_error( $rules_response ) ) {
+					$rules_body = wp_remote_retrieve_body( $rules_response );
+					$rules_data = json_decode( $rules_body, true );
+
+					if ( isset( $rules_data['result']['rules'] ) && is_array( $rules_data['result']['rules'] ) ) {
+						$rule_description = $this->get_rule_description();
+						$old_rule_description = 'MaliciousIPs - Polar Mass Advanced IP Blocker';
+						
+						foreach ( $rules_data['result']['rules'] as $rule ) {
+							if ( isset( $rule['id'] ) && isset( $rule['description'] ) ) {
+								if ( $rule['description'] === $rule_description || 
+									 $rule['description'] === $old_rule_description ||
+									 ( stripos( $rule['description'], 'MaliciousIPs' ) !== false &&
+									   stripos( $rule['description'], 'Polar Mass' ) !== false ) ) {
+									$this->logger->log( '[Auto-Connect] Found existing rule in entrypoint ruleset: ' . $rule['id'], 'info' );
+									return array(
+										'ruleset_id' => $ruleset_id,
+										'rule_id'    => $rule['id'],
+									);
+								}
+							}
+						}
+					}
+				}
+
 				$rule_endpoint = "https://api.cloudflare.com/client/v4/zones/{$zone_id}/rulesets/{$ruleset_id}/rules";
+				$rule_description = $this->get_rule_description();
 
 				$rule_data = array(
-					'description' => 'MaliciousIPs - Polar Mass Advanced IP Blocker',
+					'description' => $rule_description,
 					'expression'  => '(ip.src in {})',
 					'action'      => 'block',
 				);

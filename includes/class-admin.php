@@ -49,6 +49,10 @@ class Admin {
 		add_action( 'wp_ajax_pmip_export_logs', array( $this, 'ajax_export_logs' ) );
 		add_action( 'wp_ajax_pmip_auto_connect', array( $this, 'ajax_auto_connect' ) );
 		add_action( 'wp_ajax_pmip_select_zone', array( $this, 'ajax_select_zone' ) );
+		add_action( 'wp_ajax_pmip_get_ip_lists', array( $this, 'ajax_get_ip_lists' ) );
+		add_action( 'wp_ajax_pmip_create_ip_list', array( $this, 'ajax_create_ip_list' ) );
+		add_action( 'wp_ajax_pmip_test_connection', array( $this, 'ajax_test_connection' ) );
+		add_action( 'wp_ajax_pmip_reset_cloudflare', array( $this, 'ajax_reset_cloudflare' ) );
 	}
 
 	/**
@@ -158,6 +162,36 @@ class Admin {
 				'type'              => 'integer',
 				'sanitize_callback' => 'absint',
 				'default'           => 1000,
+			)
+		);
+
+		register_setting(
+			'pmip_settings',
+			'pmip_use_ip_list',
+			array(
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_text_field',
+				'default'           => 'false',
+			)
+		);
+
+		register_setting(
+			'pmip_settings',
+			'pmip_account_id',
+			array(
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_text_field',
+				'default'           => '',
+			)
+		);
+
+		register_setting(
+			'pmip_settings',
+			'pmip_ip_list_id',
+			array(
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_text_field',
+				'default'           => '',
 			)
 		);
 		// phpcs:enable
@@ -271,12 +305,20 @@ class Admin {
 			'pmip_plugin_status'  => 'sanitize_text_field',
 			'pmip_block_duration' => 'sanitize_text_field',
 			'pmip_max_logs'       => 'absint',
+			'pmip_use_ip_list'    => 'sanitize_text_field',
+			'pmip_account_id'     => 'sanitize_text_field',
+			'pmip_ip_list_id'     => 'sanitize_text_field',
 		);
 
 		foreach ( $fields as $field => $sanitizer ) {
 			if ( isset( $_POST[ $field ] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				update_option( $field, call_user_func( $sanitizer, wp_unslash( $_POST[ $field ] ) ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			}
+		}
+
+		// Handle checkbox for use_ip_list (checkboxes don't send value when unchecked).
+		if ( ! isset( $_POST['pmip_use_ip_list'] ) ) {
+			update_option( 'pmip_use_ip_list', 'false' );
 		}
 
 		// Handle scan interval separately since it's an integer.
@@ -486,7 +528,7 @@ class Admin {
 			return $result;
 		}
 
-		if ( ! empty( $_SERVER['SERVER_ADDR'] ) && filter_var( $_SERVER['SERVER_ADDR'], FILTER_VALIDATE_IP ) ) {
+		if ( ! empty( $_SERVER['SERVER_ADDR'] ) && filter_var( wp_unslash( $_SERVER['SERVER_ADDR'] ), FILTER_VALIDATE_IP ) ) {
 			$server_addr = sanitize_text_field( wp_unslash( $_SERVER['SERVER_ADDR'] ) );
 			if ( $this->is_private_ip( $server_addr ) ) {
 				$result['ip']   = $server_addr;
@@ -499,7 +541,7 @@ class Admin {
 			}
 		}
 
-		if ( ! empty( $_SERVER['LOCAL_ADDR'] ) && filter_var( $_SERVER['LOCAL_ADDR'], FILTER_VALIDATE_IP ) ) {
+		if ( ! empty( $_SERVER['LOCAL_ADDR'] ) && filter_var( wp_unslash( $_SERVER['LOCAL_ADDR'] ), FILTER_VALIDATE_IP ) ) {
 			$local_addr = sanitize_text_field( wp_unslash( $_SERVER['LOCAL_ADDR'] ) );
 			if ( $this->is_private_ip( $local_addr ) ) {
 				$result['ip']   = $local_addr;
@@ -556,7 +598,7 @@ class Admin {
 		// Check if it's a private IP range.
 		$private_ranges = array(
 			'10.0.0.0/8',          // Private network.
-			'172.16.0.0/12',       // Private network (172.16.0.0 - 172.31.255.255).
+			'172.16.0.0/12',       // Private network range.
 			'192.168.0.0/16',      // Private network.
 			'127.0.0.0/8',         // Loopback.
 			'169.254.0.0/16',      // Link-local.
@@ -697,5 +739,196 @@ class Admin {
 		} catch ( \Exception $e ) {
 			wp_send_json_error( array( 'message' => $e->getMessage() ) );
 		}
+	}
+
+	/**
+	 * Handle AJAX request to get IP lists
+	 */
+	public function ajax_get_ip_lists() {
+		check_ajax_referer( 'pmip-admin-nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Unauthorized access.', 'polar-mass-advanced-ip-blocker' ) ) );
+		}
+
+		try {
+			$cloudflare_api = new Cloudflare_Api( $this->logger );
+			$lists_data     = $cloudflare_api->get_ip_lists();
+
+			if ( $lists_data['success'] ) {
+				wp_send_json_success( $lists_data );
+			} else {
+				wp_send_json_error( $lists_data );
+			}
+		} catch ( \Exception $e ) {
+			wp_send_json_error( array( 'message' => $e->getMessage() ) );
+		}
+	}
+
+	/**
+	 * Handle AJAX request to create IP list
+	 */
+	public function ajax_create_ip_list() {
+		check_ajax_referer( 'pmip-admin-nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Unauthorized access.', 'polar-mass-advanced-ip-blocker' ) ) );
+		}
+
+		try {
+			$cloudflare_api = new Cloudflare_Api( $this->logger );
+			$result         = $cloudflare_api->create_ip_list();
+
+			if ( $result['success'] ) {
+				update_option( 'pmip_ip_list_id', $result['list_id'] );
+				wp_send_json_success( $result );
+			} else {
+				wp_send_json_error( $result );
+			}
+		} catch ( \Exception $e ) {
+			wp_send_json_error( array( 'message' => $e->getMessage() ) );
+		}
+	}
+
+	/**
+	 * Handle AJAX request to test Cloudflare connection
+	 */
+	public function ajax_test_connection() {
+		check_ajax_referer( 'pmip-admin-nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Unauthorized access.', 'polar-mass-advanced-ip-blocker' ) ) );
+		}
+
+		$zone_id    = get_option( 'pmip_zone_id', '' );
+		$ruleset_id = get_option( 'pmip_ruleset_id', '' );
+		$rule_id    = get_option( 'pmip_rule_id', '' );
+		$api_token  = get_option( 'pmip_api_token', '' );
+
+		if ( empty( $zone_id ) || empty( $ruleset_id ) || empty( $rule_id ) || empty( $api_token ) ) {
+			wp_send_json_error( array( 'message' => __( 'Cloudflare configuration is incomplete. Please reconnect.', 'polar-mass-advanced-ip-blocker' ) ) );
+		}
+
+		try {
+			$token_manager = new Cloudflare_Token_Manager( $this->logger );
+			
+			$zones_data = $token_manager->get_zones_list( $api_token );
+			if ( empty( $zones_data['zones'] ) ) {
+				wp_send_json_error(
+					array(
+						'message' => __( 'Connection test failed. Unable to access Cloudflare zones. Please check your API token.', 'polar-mass-advanced-ip-blocker' ),
+					)
+				);
+				return;
+			}
+
+			$zone_found = false;
+			foreach ( $zones_data['zones'] as $zone ) {
+				if ( isset( $zone['id'] ) && $zone['id'] === $zone_id ) {
+					$zone_found = true;
+					break;
+				}
+			}
+
+			if ( ! $zone_found ) {
+				wp_send_json_error(
+					array(
+						'message' => __( 'Connection test failed. The configured zone ID was not found in your account.', 'polar-mass-advanced-ip-blocker' ),
+					)
+				);
+				return;
+			}
+
+			$rule_details = $token_manager->get_rule_details( $zone_id, $ruleset_id, $rule_id, $api_token );
+
+			if ( false !== $rule_details && is_array( $rule_details ) ) {
+				$rule_status = isset( $rule_details['enabled'] ) && $rule_details['enabled'] 
+					? __( 'enabled', 'polar-mass-advanced-ip-blocker' )
+					: __( 'disabled', 'polar-mass-advanced-ip-blocker' );
+				
+				wp_send_json_success(
+					array(
+						'message' => sprintf(
+							/* translators: %s: Rule status (enabled/disabled) */
+							__( 'Connection verified successfully! Rule is %s and operational.', 'polar-mass-advanced-ip-blocker' ),
+							$rule_status
+						),
+					)
+				);
+			} else {
+				$ruleset_endpoint = "https://api.cloudflare.com/client/v4/zones/{$zone_id}/rulesets/{$ruleset_id}";
+				$ruleset_args = array(
+					'method'  => 'GET',
+					'headers' => array(
+						'Authorization' => 'Bearer ' . $api_token,
+						'Content-Type'  => 'application/json',
+					),
+					'timeout' => 30,
+				);
+				
+				$ruleset_response = wp_remote_request( $ruleset_endpoint, $ruleset_args );
+				
+				if ( ! is_wp_error( $ruleset_response ) ) {
+					$ruleset_status = wp_remote_retrieve_response_code( $ruleset_response );
+					if ( 200 === $ruleset_status ) {
+						wp_send_json_error(
+							array(
+								'message' => __( 'Connection test failed. Ruleset exists but the specific rule could not be found. The rule may have been deleted. Please check your rule ID or reset and reconnect.', 'polar-mass-advanced-ip-blocker' ),
+							)
+						);
+					} else {
+						wp_send_json_error(
+							array(
+								'message' => __( 'Connection test failed. The ruleset could not be found. Please check your ruleset ID or reset and reconnect.', 'polar-mass-advanced-ip-blocker' ),
+							)
+						);
+					}
+				} else {
+					wp_send_json_error(
+						array(
+							'message' => __( 'Connection test failed. Zone access confirmed, but rule details could not be retrieved. Please check your configuration or try again later.', 'polar-mass-advanced-ip-blocker' ),
+						)
+					);
+				}
+			}
+		} catch ( \Exception $e ) {
+			wp_send_json_error(
+				array(
+					'message' => sprintf(
+						/* translators: %s: Error message */
+						__( 'Connection test failed: %s', 'polar-mass-advanced-ip-blocker' ),
+						$e->getMessage()
+					),
+				)
+			);
+		}
+	}
+
+	/**
+	 * Handle AJAX request to reset Cloudflare connection
+	 */
+	public function ajax_reset_cloudflare() {
+		check_ajax_referer( 'pmip-admin-nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Unauthorized access.', 'polar-mass-advanced-ip-blocker' ) ) );
+		}
+
+		// Clear all Cloudflare-related options
+		delete_option( 'pmip_api_token' );
+		delete_option( 'pmip_zone_id' );
+		delete_option( 'pmip_ruleset_id' );
+		delete_option( 'pmip_rule_id' );
+		delete_option( 'pmip_master_token' );
+		delete_option( 'pmip_auto_connected' );
+		delete_option( 'pmip_account_id' );
+		delete_option( 'pmip_ip_list_id' );
+		delete_transient( 'pmip_connection_status' );
+
+		wp_send_json_success(
+			array(
+				'message' => __( 'Cloudflare connection settings have been reset. You can now set up a new connection.', 'polar-mass-advanced-ip-blocker' ),
+			)
+		);
 	}
 }
